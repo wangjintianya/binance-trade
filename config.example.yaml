@@ -1,0 +1,127 @@
+# Binance Auto-Trading System Configuration Example
+# 币安自动交易系统配置示例
+
+# ============================================
+# Binance API Configuration
+# 币安API配置
+# ============================================
+binance:
+  # API credentials (use environment variables for security)
+  # API凭证（使用环境变量以确保安全）
+  api_key: ${BINANCE_API_KEY}
+  api_secret: ${BINANCE_API_SECRET}
+  
+  # API base URL
+  # API基础URL
+  # Production: https://api.binance.com
+  # Testnet: https://testnet.binance.vision
+  base_url: https://api.binance.com
+  
+  # Use testnet (set to true for testing)
+  # 使用测试网（测试时设为true）
+  testnet: false
+
+# ============================================
+# Risk Management Configuration
+# 风险管理配置
+# ============================================
+risk:
+  # Maximum order amount in USDT
+  # 单笔最大订单金额（USDT）
+  # Prevents placing orders larger than this amount
+  # 防止下单金额超过此限制
+  max_order_amount: 10000.0
+  
+  # Maximum number of orders per day
+  # 每日最大订单数量
+  # Limits the total number of orders that can be placed in 24 hours
+  # 限制24小时内可下单的总数量
+  max_daily_orders: 100
+  
+  # Minimum balance reserve in USDT
+  # 最小保留余额（USDT）
+  # System will not place buy orders if balance would fall below this
+  # 如果余额将低于此值，系统将不会下买单
+  min_balance_reserve: 100.0
+  
+  # Maximum API calls per minute
+  # 每分钟最大API调用次数
+  # Prevents exceeding Binance rate limits (Binance limit: 1200/min)
+  # 防止超过币安速率限制（币安限制：1200次/分钟）
+  max_api_calls_per_min: 1000
+
+# ============================================
+# Logging Configuration
+# 日志配置
+# ============================================
+logging:
+  # Log level: debug, info, warn, error
+  # 日志级别：debug（调试）、info（信息）、warn（警告）、error（错误）
+  level: info
+  
+  # Log file path
+  # 日志文件路径
+  file: logs/trading.log
+  
+  # Maximum size of a single log file in MB
+  # 单个日志文件最大大小（MB）
+  max_size_mb: 100
+  
+  # Number of old log files to keep
+  # 保留的旧日志文件数量
+  max_backups: 5
+
+# ============================================
+# Retry Configuration
+# 重试配置
+# ============================================
+retry:
+  # Maximum number of retry attempts for failed requests
+  # 失败请求的最大重试次数
+  max_attempts: 3
+  
+  # Initial delay before first retry in milliseconds
+  # 首次重试前的初始延迟（毫秒）
+  initial_delay_ms: 1000
+  
+  # Backoff multiplier for exponential backoff
+  # 指数退避的倍数
+  # Delay pattern: 1s, 2s, 4s, 8s, ...
+  # 延迟模式：1秒、2秒、4秒、8秒...
+  backoff_multiplier: 2.0
+
+# ============================================
+# Configuration Notes / 配置说明
+# ============================================
+#
+# 1. Environment Variables / 环境变量:
+#    - BINANCE_API_KEY: Your Binance API key
+#    - BINANCE_API_SECRET: Your Binance API secret
+#    - CONFIG_FILE: Path to this config file (optional)
+#    - LOG_LEVEL: Override logging level (optional)
+#
+# 2. Testnet Setup / 测试网设置:
+#    - Get testnet API keys from: https://testnet.binance.vision/
+#    - Set base_url to: https://testnet.binance.vision
+#    - Set testnet to: true
+#
+# 3. Security Best Practices / 安全最佳实践:
+#    - Never commit API keys to version control
+#    - Use environment variables for sensitive data
+#    - Enable IP whitelist on Binance API settings
+#    - Start with read-only API keys for testing
+#    - Use testnet before production
+#
+# 4. Risk Management Tips / 风险管理提示:
+#    - Start with small max_order_amount
+#    - Set conservative min_balance_reserve
+#    - Monitor logs regularly
+#    - Test thoroughly on testnet first
+#
+# 5. Performance Tuning / 性能调优:
+#    - Adjust max_api_calls_per_min based on your needs
+#    - Lower values = safer but slower
+#    - Higher values = faster but risk rate limiting
+#    - Binance limit is 1200 requests/minute
+#
+# ============================================
