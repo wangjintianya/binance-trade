@@ -482,6 +482,8 @@ Conditional orders allow you to set orders that execute automatically when speci
 
 #### 📊 现货条件单 / Spot Conditional Orders
 
+**命令行支持：** ✅ 已实现 / CLI Support: ✅ Implemented
+
 ##### 支持的触发条件 / Supported Trigger Conditions
 
 1. **价格触发** / **Price Trigger**
@@ -547,6 +549,8 @@ Conditional order cond-001 cancelled successfully
 
 #### 🚀 合约条件单 / Futures Conditional Orders
 
+**命令行支持：** ✅ 已实现 / CLI Support: ✅ Implemented
+
 合约条件单支持更多触发类型，适用于合约交易的特殊需求。
 
 Futures conditional orders support more trigger types for specific futures trading needs.
@@ -583,8 +587,22 @@ Futures conditional orders support more trigger types for specific futures tradi
 ##### 使用示例 / Usage Examples
 
 **示例 1: 标记价格突破开多 / Mark Price Breakout Long**
+```bash
+# CLI命令 / CLI Command
+./binance-trader.exe futures
+
+> condorder BTCUSDT BUY LONG 0.001 MARK_PRICE >= 50000
+Conditional Order Created
+Order ID:    cond-001
+Symbol:      BTCUSDT
+Side:        BUY
+Position:    LONG
+Quantity:    0.00100000
+Trigger:     MARK_PRICE >= 50000.00000000
+```
+
+**代码示例 / Code Example:**
 ```go
-// 代码示例 / Code example
 request := &FuturesConditionalOrderRequest{
     Symbol:       "BTCUSDT",
     Side:         api.OrderSideBuy,
@@ -603,6 +621,13 @@ order, err := futuresConditionalService.CreateConditionalOrder(request)
 ```
 
 **示例 2: 盈亏止盈 / PnL Take Profit**
+```bash
+# CLI命令 / CLI Command
+> condorder BTCUSDT SELL LONG 0.001 PNL >= 1000
+Conditional Order Created - Will close position when PnL reaches 1000 USDT
+```
+
+**代码示例 / Code Example:**
 ```go
 // 当未实现盈亏达到1000 USDT时自动平仓
 // Auto close position when unrealized PnL reaches 1000 USDT
@@ -622,6 +647,13 @@ request := &FuturesConditionalOrderRequest{
 ```
 
 **示例 3: 资金费率套利 / Funding Rate Arbitrage**
+```bash
+# CLI命令 / CLI Command
+> condorder BTCUSDT SELL SHORT 0.001 FUNDING_RATE >= 0.0001
+Conditional Order Created - Will open short when funding rate >= 0.01%
+```
+
+**代码示例 / Code Example:**
 ```go
 // 当资金费率超过0.01%时开空仓（套利策略）
 // Open short when funding rate exceeds 0.01% (arbitrage strategy)

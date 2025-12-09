@@ -41,7 +41,8 @@ type Application struct {
 	futuresStopLossSvc         service.FuturesStopLossService
 	futuresFundingService      service.FuturesFundingService
 	
-	cli *cli.CLI
+	spotCLI    *cli.CLI
+	futuresCLI *cli.FuturesCLI
 }
 
 func main() {
@@ -293,8 +294,8 @@ func initializeSpotComponents(app *Application, cfg *config.Config, log logger.L
 		log,
 	)
 
-	// Initialize CLI
-	app.cli = cli.NewCLI(app.spotTradingService, app.spotMarketService, app.spotConditionalOrderSvc, app.spotStopLossSvc, log)
+	// Initialize Spot CLI
+	app.spotCLI = cli.NewCLI(app.spotTradingService, app.spotMarketService, app.spotConditionalOrderSvc, app.spotStopLossSvc, log)
 
 	log.Info("Spot trading components initialized successfully", nil)
 	return nil
@@ -397,10 +398,15 @@ func initializeFuturesComponents(app *Application, cfg *config.Config, log logge
 		log,
 	)
 
-	// Initialize CLI (futures CLI would need to be implemented separately)
-	// For now, we'll use a placeholder or the spot CLI
-	// TODO: Implement futures-specific CLI
-	app.cli = nil // Futures CLI not yet implemented
+	// Initialize Futures CLI
+	app.futuresCLI = cli.NewFuturesCLI(
+		app.futuresTradingService,
+		app.futuresMarketService,
+		app.futuresPositionManager,
+		app.futuresConditionalOrderSvc,
+		app.futuresStopLossSvc,
+		log,
+	)
 
 	log.Info("Futures trading components initialized successfully", nil)
 	return nil
@@ -435,9 +441,9 @@ func (app *Application) runSpot(ctx context.Context) error {
 		return fmt.Errorf("failed to start conditional order monitoring: %w", err)
 	}
 
-	// Run CLI
-	if app.cli != nil {
-		if err := app.cli.Run(); err != nil {
+	// Run Spot CLI
+	if app.spotCLI != nil {
+		if err := app.spotCLI.Run(); err != nil {
 			return fmt.Errorf("CLI error: %w", err)
 		}
 	}
@@ -466,14 +472,14 @@ func (app *Application) runFutures(ctx context.Context) error {
 		}
 	}
 
-	// Run CLI if available
-	if app.cli != nil {
-		if err := app.cli.Run(); err != nil {
+	// Run Futures CLI
+	if app.futuresCLI != nil {
+		if err := app.futuresCLI.Run(); err != nil {
 			return fmt.Errorf("CLI error: %w", err)
 		}
 	} else {
 		// If no CLI, just wait for context cancellation
-		app.logger.Info("Futures system running (CLI not implemented yet)", nil)
+		app.logger.Info("Futures system running (CLI not available)", nil)
 		<-ctx.Done()
 	}
 
