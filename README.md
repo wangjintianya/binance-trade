@@ -465,32 +465,265 @@ Goodbye!
 
 ### 条件订单 / Conditional Orders
 
-条件订单允许您设置在满足特定市场条件时自动执行的订单。
+条件订单允许您设置在满足特定市场条件时自动执行的订单。与普通限价单不同，条件订单在本地系统中监控，当条件满足时自动发送市价单到交易所，保证成交。
 
-Conditional orders allow you to set orders that execute automatically when specific market conditions are met.
+Conditional orders allow you to set orders that execute automatically when specific market conditions are met. Unlike regular limit orders, conditional orders are monitored locally and automatically send market orders to the exchange when conditions are met, ensuring execution.
 
-#### 支持的触发条件 / Supported Trigger Conditions
+#### 🔄 条件单 vs 限价单 / Conditional Orders vs Limit Orders
 
-1. **价格触发** / **Price Trigger** - 当价格达到指定水平时触发 / Triggers when price reaches specified level
-2. **涨跌幅触发** / **Percentage Change Trigger** - 当价格变化达到指定百分比时触发 / Triggers when price changes by specified percentage
-3. **成交量触发** / **Volume Trigger** - 当成交量达到指定阈值时触发 / Triggers when volume reaches specified threshold
-4. **复合条件** / **Composite Conditions** - 使用AND/OR逻辑组合多个条件 / Combine multiple conditions with AND/OR logic
+| 特性 / Feature | 限价单 / Limit Order | 条件单 / Conditional Order |
+|---------------|---------------------|---------------------------|
+| **提交时机** / **Submission** | 立即提交到交易所 / Immediately to exchange | 条件满足时提交 / When condition met |
+| **订单类型** / **Order Type** | 限价单 / Limit | 市价单 / Market |
+| **成交保证** / **Execution** | 不保证成交 / Not guaranteed | 保证成交 / Guaranteed |
+| **监控位置** / **Monitoring** | 交易所 / Exchange | 本地系统 / Local system |
+| **触发条件** / **Triggers** | 仅价格 / Price only | 价格、涨跌幅、成交量等 / Price, %, volume, etc. |
+| **系统要求** / **System** | 可关闭 / Can shutdown | 必须运行 / Must run |
 
-#### 使用示例 / Usage Example
+#### 📊 现货条件单 / Spot Conditional Orders
 
+##### 支持的触发条件 / Supported Trigger Conditions
+
+1. **价格触发** / **Price Trigger**
+   - 当价格达到指定水平时触发 / Triggers when price reaches specified level
+   - 示例 / Example: 价格 >= 50000 / Price >= 50000
+
+2. **涨跌幅触发** / **Percentage Change Trigger**
+   - 当价格变化达到指定百分比时触发 / Triggers when price changes by specified percentage
+   - 示例 / Example: 涨幅 >= 5% / Rise >= 5%
+
+3. **成交量触发** / **Volume Trigger**
+   - 当成交量达到指定阈值时触发 / Triggers when volume reaches specified threshold
+   - 示例 / Example: 成交量 >= 1000000 / Volume >= 1000000
+
+4. **复合条件** / **Composite Conditions**
+   - 使用AND/OR逻辑组合多个条件 / Combine multiple conditions with AND/OR logic
+   - 示例 / Example: (价格 >= 50000) AND (成交量 >= 100000)
+
+##### 使用示例 / Usage Examples
+
+**示例 1: 突破买入 / Breakout Buy**
 ```bash
-# 当BTC价格达到45000时买入
-# Buy BTC when price reaches 45000
-> conditional-buy BTCUSDT 0.001 45000
+# 当BTC价格突破50000时买入（突破策略）
+# Buy BTC when price breaks above 50000 (breakout strategy)
+> conditional-buy BTCUSDT 0.001 50000
 
-# 当BTC价格跌至42000时卖出
-# Sell BTC when price drops to 42000
-> conditional-sell BTCUSDT 0.001 42000
-
-# 查看活跃的条件订单
-# View active conditional orders
-> conditional-orders
+# 系统会：
+# 1. 保存条件订单到本地
+# 2. 每秒监控BTC价格
+# 3. 当价格 >= 50000 时，自动发送市价买单
+# 4. 保证成交
 ```
+
+**示例 2: 回调买入 / Pullback Buy**
+```bash
+# 当BTC价格回调到45000时买入（回调策略）
+# Buy BTC when price pulls back to 45000 (pullback strategy)
+> conditional-buy BTCUSDT 0.001 45000
+```
+
+**示例 3: 止损卖出 / Stop Loss Sell**
+```bash
+# 当BTC价格跌破42000时卖出（止损）
+# Sell BTC when price drops below 42000 (stop loss)
+> conditional-sell BTCUSDT 0.001 42000
+```
+
+**示例 4: 查看和管理条件订单 / View and Manage**
+```bash
+# 查看所有活跃的条件订单
+# View all active conditional orders
+> conditional-orders
+
+Active Conditional Orders (2)
+[1] ID=cond-001, Symbol=BTCUSDT, Side=BUY, Trigger=PRICE >= 50000
+[2] ID=cond-002, Symbol=ETHUSDT, Side=SELL, Trigger=PRICE <= 2000
+
+# 取消条件订单
+# Cancel conditional order
+> cancel-conditional cond-001
+Conditional order cond-001 cancelled successfully
+```
+
+#### 🚀 合约条件单 / Futures Conditional Orders
+
+合约条件单支持更多触发类型，适用于合约交易的特殊需求。
+
+Futures conditional orders support more trigger types for specific futures trading needs.
+
+##### 支持的触发类型 / Supported Trigger Types
+
+1. **标记价格触发** / **Mark Price Trigger**
+   - 基于标记价格（更稳定，防止操纵）/ Based on mark price (more stable, manipulation-resistant)
+   - 示例 / Example: 标记价 >= 50000 / Mark price >= 50000
+
+2. **最新价格触发** / **Last Price Trigger**
+   - 基于最新成交价 / Based on last traded price
+   - 示例 / Example: 最新价 >= 50000 / Last price >= 50000
+
+3. **未实现盈亏触发** / **Unrealized PnL Trigger**
+   - 基于持仓的未实现盈亏 / Based on position's unrealized profit/loss
+   - 示例 / Example: 盈亏 >= 1000 USDT / PnL >= 1000 USDT
+
+4. **资金费率触发** / **Funding Rate Trigger**
+   - 基于资金费率水平 / Based on funding rate level
+   - 示例 / Example: 费率 >= 0.01% / Rate >= 0.01%
+
+5. **保证金率触发** / **Margin Ratio Trigger**
+   - 基于账户保证金率 / Based on account margin ratio
+   - 示例 / Example: 保证金率 <= 10% / Margin ratio <= 10%
+
+##### 合约条件单特性 / Futures Conditional Features
+
+- ✅ **仓位方向控制** / **Position Side Control**: 支持 LONG/SHORT/BOTH
+- ✅ **只减仓模式** / **Reduce Only Mode**: 只允许平仓，不开新仓
+- ✅ **标记价格保护** / **Mark Price Protection**: 使用标记价格防止价格操纵
+- ✅ **盈亏自动管理** / **PnL Auto Management**: 基于盈亏自动平仓
+
+##### 使用示例 / Usage Examples
+
+**示例 1: 标记价格突破开多 / Mark Price Breakout Long**
+```go
+// 代码示例 / Code example
+request := &FuturesConditionalOrderRequest{
+    Symbol:       "BTCUSDT",
+    Side:         api.OrderSideBuy,
+    PositionSide: api.PositionSideLong,
+    Type:         api.OrderTypeMarket,
+    Quantity:     0.001,
+    TriggerCondition: &FuturesTriggerCondition{
+        Type:      FuturesTriggerTypeMarkPrice,
+        Operator:  OperatorGreaterEqual,
+        Value:     50000.0,
+        PriceType: api.PriceTypeMark,
+    },
+}
+
+order, err := futuresConditionalService.CreateConditionalOrder(request)
+```
+
+**示例 2: 盈亏止盈 / PnL Take Profit**
+```go
+// 当未实现盈亏达到1000 USDT时自动平仓
+// Auto close position when unrealized PnL reaches 1000 USDT
+request := &FuturesConditionalOrderRequest{
+    Symbol:       "BTCUSDT",
+    Side:         api.OrderSideSell,
+    PositionSide: api.PositionSideLong,
+    Type:         api.OrderTypeMarket,
+    Quantity:     0.001,
+    ReduceOnly:   true,  // 只减仓
+    TriggerCondition: &FuturesTriggerCondition{
+        Type:     FuturesTriggerTypeUnrealizedPnL,
+        Operator: OperatorGreaterEqual,
+        Value:    1000.0,
+    },
+}
+```
+
+**示例 3: 资金费率套利 / Funding Rate Arbitrage**
+```go
+// 当资金费率超过0.01%时开空仓（套利策略）
+// Open short when funding rate exceeds 0.01% (arbitrage strategy)
+request := &FuturesConditionalOrderRequest{
+    Symbol:       "BTCUSDT",
+    Side:         api.OrderSideSell,
+    PositionSide: api.PositionSideShort,
+    Type:         api.OrderTypeMarket,
+    Quantity:     0.001,
+    TriggerCondition: &FuturesTriggerCondition{
+        Type:     FuturesTriggerTypeFundingRate,
+        Operator: OperatorGreaterEqual,
+        Value:    0.0001, // 0.01%
+    },
+}
+```
+
+#### ⚙️ 监控机制 / Monitoring Mechanism
+
+条件订单通过后台监控引擎持续监控市场数据。
+
+Conditional orders are continuously monitored by a background monitoring engine.
+
+**监控流程 / Monitoring Flow:**
+```
+创建条件订单
+  ↓
+保存到本地数据库
+  ↓
+注册到监控引擎
+  ↓
+[每秒检查一次]
+  ↓
+评估触发条件
+  ↓
+条件满足？
+  ├─ 是 → 发送市价单 → 更新状态为已执行
+  └─ 否 → 继续监控
+```
+
+**配置参数 / Configuration:**
+```yaml
+# 现货条件订单配置 / Spot conditional orders
+conditional_orders:
+  monitoring_interval_ms: 1000      # 监控间隔（毫秒）/ Monitoring interval (ms)
+  max_active_orders: 100            # 最大活跃订单数 / Max active orders
+  trigger_execution_timeout_ms: 3000 # 触发执行超时 / Trigger timeout
+
+# 合约条件订单配置 / Futures conditional orders
+futures:
+  monitoring:
+    conditional_order_interval_ms: 1000  # 监控间隔 / Monitoring interval
+```
+
+#### 💡 使用建议 / Usage Tips
+
+**何时使用条件单 / When to Use Conditional Orders:**
+- ✅ 需要保证成交（条件满足时立即市价成交）
+- ✅ 需要复杂触发条件（涨跌幅、成交量、盈亏等）
+- ✅ 实施突破策略、回调策略
+- ✅ 系统会持续运行
+
+**何时使用限价单 / When to Use Limit Orders:**
+- ✅ 不急于成交
+- ✅ 希望以特定价格或更好价格交易
+- ✅ 系统可能会关闭
+- ✅ 只需要简单的价格条件
+
+**最佳实践 / Best Practices:**
+1. 先在测试网测试条件订单 / Test conditional orders on testnet first
+2. 设置合理的触发条件，避免频繁触发 / Set reasonable triggers to avoid frequent execution
+3. 监控系统日志，确保监控引擎正常运行 / Monitor logs to ensure monitoring engine runs properly
+4. 定期检查活跃条件订单 / Regularly check active conditional orders
+5. 为重要策略设置备用条件订单 / Set backup conditional orders for important strategies
+
+#### 📝 日志和监控 / Logging and Monitoring
+
+条件订单的所有活动都会被记录：
+
+All conditional order activities are logged:
+
+```
+# 创建条件订单
+{"level":"info","message":"Conditional order created","order_id":"cond-001","symbol":"BTCUSDT","trigger":"PRICE >= 50000"}
+
+# 监控中
+{"level":"debug","message":"Evaluating trigger condition","order_id":"cond-001","current_price":49500,"trigger_price":50000}
+
+# 触发执行
+{"level":"info","message":"Conditional order triggered","order_id":"cond-001","trigger_value":50100}
+{"level":"info","message":"Market order placed","order_id":"12345","symbol":"BTCUSDT","side":"BUY"}
+
+# 执行完成
+{"level":"info","message":"Conditional order executed","order_id":"cond-001","executed_order_id":12345}
+```
+
+#### 🔗 相关文档 / Related Documentation
+
+- 详细命令指南 / Detailed command guide: [docs/COMMAND_GUIDE.md](docs/COMMAND_GUIDE.md)
+- API文档 / API documentation: [docs/API.md](docs/API.md)
+- 使用示例 / Usage examples: [docs/EXAMPLES.md](docs/EXAMPLES.md)
+- 合约快速入门 / Futures quick start: [docs/FUTURES_QUICKSTART.md](docs/FUTURES_QUICKSTART.md)
 
 ### 止损止盈 / Stop Loss & Take Profit
 
