@@ -118,3 +118,435 @@
 {"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T10:25:32+08:00"}
 {"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T10:25:32+08:00"}
 {"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T10:25:32+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T14:15:01+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T14:15:01+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T14:15:01+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T14:15:01+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T14:15:01+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:36:27+08:00"}
+{"error":"monitoring engine not running","level":"error","message":"Error stopping conditional order monitoring","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:36:27+08:00"}
+{"error":"monitoring engine not running","level":"error","message":"Error stopping conditional order monitoring","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:36:27+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:36:27+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:36:27+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:36:27+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:36:27+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:36:27+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:27+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:36:27+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:36:28+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:36:28+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:36:28+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:36:28+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:36:28+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:36:28+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:36:28+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:36:28+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:37:07+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:37:07+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:37:07+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:37:07+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:37:07+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:37:07+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:07+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:37:07+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:37:08+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:37:08+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:37:08+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:37:08+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:37:08+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:37:08+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:37:08+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:37:08+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:52:56+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:52:56+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:52:56+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:52:56+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:52:56+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:52:56+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:52:56+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:56+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:52:56+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:52:57+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:57+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:52:57+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:52:57+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:52:57+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:52:57+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:03+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:03+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:03+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:03+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:03+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:03+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:03+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:35+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:35+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:35+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:35+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:54:35+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:54:35+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:54:35+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:58:46+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:58:46+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:58:46+08:00","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:58:46+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-04T20:58:46+08:00","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-04T20:58:46+08:00"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T20:58:46+08:00"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:28:56+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:33:07+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T11:34:36+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot"}
+{"active_orders":0,"level":"info","message":"Monitoring engine started","timestamp":"2025-12-05T18:28:42+08:00","trading_type":"spot","update_interval":"1s"}
+{"level":"info","message":"Starting graceful shutdown","timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Stopping conditional order monitoring","timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring loop received stop signal","timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}
+{"level":"info","message":"Monitoring engine stopped","timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: Logging final statistics","timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}
+{"level":"info","message":"Shutdown: All resources cleaned up","timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}
+{"level":"info","message":"Graceful shutdown completed","timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","config_file":"../config.example.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-05T18:28:43+08:00","trading_type":"spot"}

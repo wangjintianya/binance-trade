@@ -18,14 +18,30 @@ import (
 
 // Application holds all application dependencies
 type Application struct {
-	config         *config.Config
-	logger         logger.Logger
-	binanceClient  api.BinanceClient
-	tradingService service.TradingService
-	marketService  service.MarketDataService
-	orderRepo      repository.OrderRepository
-	riskMgr        service.RiskManager
-	cli            *cli.CLI
+	config      *config.Config
+	logger      logger.Logger
+	tradingType config.TradingType
+	
+	// Spot-specific components
+	spotClient              api.BinanceClient
+	spotTradingService      service.TradingService
+	spotMarketService       service.MarketDataService
+	spotOrderRepo           repository.OrderRepository
+	spotRiskMgr             service.RiskManager
+	spotConditionalOrderSvc service.ConditionalOrderService
+	spotStopLossSvc         service.StopLossService
+	
+	// Futures-specific components
+	futuresClient              api.FuturesClient
+	futuresTradingService      service.FuturesTradingService
+	futuresMarketService       service.FuturesMarketDataService
+	futuresPositionManager     service.FuturesPositionManager
+	futuresRiskManager         service.FuturesRiskManager
+	futuresConditionalOrderSvc service.FuturesConditionalOrderService
+	futuresStopLossSvc         service.FuturesStopLossService
+	futuresFundingService      service.FuturesFundingService
+	
+	cli *cli.CLI
 }
 
 func main() {
@@ -37,6 +53,22 @@ func main() {
 		}
 	}()
 
+	// Determine trading type from command line arguments
+	tradingType := config.TradingTypeSpot // Default to spot
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "spot":
+			tradingType = config.TradingTypeSpot
+		case "futures":
+			tradingType = config.TradingTypeFutures
+		default:
+			fmt.Fprintf(os.Stderr, "Usage: %s [spot|futures]\n", os.Args[0])
+			fmt.Fprintf(os.Stderr, "  spot    - Run spot trading system (default)\n")
+			fmt.Fprintf(os.Stderr, "  futures - Run futures trading system\n")
+			os.Exit(1)
+		}
+	}
+
 	// Run application with context
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -46,13 +78,15 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
 	// Initialize application
-	app, err := initializeApplication()
+	app, err := initializeApplication(tradingType)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to initialize application: %v\n", err)
 		os.Exit(1)
 	}
 
-	app.logger.Info("System initialized successfully", nil)
+	app.logger.Info("System initialized successfully", map[string]interface{}{
+		"trading_type": string(tradingType),
+	})
 
 	// Run application in goroutine
 	errChan := make(chan error, 1)
@@ -92,7 +126,7 @@ func main() {
 }
 
 // initializeApplication initializes all application components with dependency injection
-func initializeApplication() (*Application, error) {
+func initializeApplication(tradingType config.TradingType) (*Application, error) {
 	// Get config file path from environment or use default
 	configPath := os.Getenv("CONFIG_FILE")
 	if configPath == "" {
@@ -107,31 +141,91 @@ func initializeApplication() (*Application, error) {
 	}
 
 	// Initialize logger
-	loggerConfig := logger.Config{
-		Level:         cfg.Logging.Level,
-		FilePath:      cfg.Logging.File,
-		MaxSizeMB:     int64(cfg.Logging.MaxSizeMB),
-		MaxBackups:    cfg.Logging.MaxBackups,
-		EnableConsole: true,
-	}
-	log, err := logger.NewLogger(loggerConfig)
+	log, err := initializeLogger(cfg, tradingType)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize logger: %w", err)
 	}
 
 	log.Info("Starting Binance Auto-Trading System", map[string]interface{}{
-		"config_file": configPath,
-		"base_url":    cfg.Binance.BaseURL,
-		"testnet":     cfg.Binance.Testnet,
+		"config_file":  configPath,
+		"trading_type": string(tradingType),
+	})
+
+	// Initialize application based on trading type
+	app := &Application{
+		config:      cfg,
+		logger:      log,
+		tradingType: tradingType,
+	}
+
+	switch tradingType {
+	case config.TradingTypeSpot:
+		if err := initializeSpotComponents(app, cfg, log); err != nil {
+			return nil, fmt.Errorf("failed to initialize spot components: %w", err)
+		}
+	case config.TradingTypeFutures:
+		if err := initializeFuturesComponents(app, cfg, log); err != nil {
+			return nil, fmt.Errorf("failed to initialize futures components: %w", err)
+		}
+	default:
+		return nil, fmt.Errorf("unknown trading type: %s", tradingType)
+	}
+
+	return app, nil
+}
+
+// initializeLogger creates and configures the logger based on trading type
+func initializeLogger(cfg *config.Config, tradingType config.TradingType) (logger.Logger, error) {
+	var logFile string
+	
+	switch tradingType {
+	case config.TradingTypeSpot:
+		if cfg.Logging.SpotFile != "" {
+			logFile = cfg.Logging.SpotFile
+		} else {
+			logFile = cfg.Logging.File
+		}
+	case config.TradingTypeFutures:
+		if cfg.Logging.FuturesFile != "" {
+			logFile = cfg.Logging.FuturesFile
+		} else {
+			logFile = cfg.Logging.File
+		}
+	default:
+		return nil, fmt.Errorf("unknown trading type: %s", tradingType)
+	}
+
+	loggerConfig := logger.Config{
+		Level:         cfg.Logging.Level,
+		FilePath:      logFile,
+		MaxSizeMB:     int64(cfg.Logging.MaxSizeMB),
+		MaxBackups:    cfg.Logging.MaxBackups,
+		EnableConsole: true,
+		TradingType:   string(tradingType),
+	}
+	
+	return logger.NewLogger(loggerConfig)
+}
+
+// initializeSpotComponents initializes all spot trading components
+func initializeSpotComponents(app *Application, cfg *config.Config, log logger.Logger) error {
+	// Determine which config to use
+	var binanceConfig *config.BinanceConfig
+	if cfg.Spot != nil {
+		binanceConfig = cfg.Spot
+	} else {
+		binanceConfig = &cfg.Binance
+	}
+
+	log.Info("Initializing spot trading components", map[string]interface{}{
+		"base_url": binanceConfig.BaseURL,
+		"testnet":  binanceConfig.Testnet,
 	})
 
 	// Initialize authentication manager
-	authMgr, err := api.NewAuthManager(cfg.Binance.APIKey, cfg.Binance.APISecret)
+	authMgr, err := api.NewAuthManager(binanceConfig.APIKey, binanceConfig.APISecret)
 	if err != nil {
-		log.Error("Failed to initialize auth manager", map[string]interface{}{
-			"error": err.Error(),
-		})
-		return nil, fmt.Errorf("failed to initialize auth manager: %w", err)
+		return fmt.Errorf("failed to initialize auth manager: %w", err)
 	}
 
 	// Initialize rate limiter
@@ -145,17 +239,15 @@ func initializeApplication() (*Application, error) {
 	}
 	httpClient := api.NewHTTPClient(rateLimiter, retryConfig)
 
-	// Initialize Binance API client
-	binanceClient, err := api.NewBinanceClient(cfg.Binance.BaseURL, httpClient, authMgr)
+	// Initialize Binance spot client
+	spotClient, err := api.NewSpotClient(binanceConfig.BaseURL, httpClient, authMgr)
 	if err != nil {
-		log.Error("Failed to initialize Binance client", map[string]interface{}{
-			"error": err.Error(),
-		})
-		return nil, fmt.Errorf("failed to initialize Binance client: %w", err)
+		return fmt.Errorf("failed to initialize spot client: %w", err)
 	}
+	app.spotClient = spotClient
 
 	// Initialize order repository
-	orderRepo := repository.NewMemoryOrderRepository()
+	app.spotOrderRepo = repository.NewMemoryOrderRepository()
 
 	// Initialize risk manager
 	riskLimits := &service.RiskLimits{
@@ -164,32 +256,159 @@ func initializeApplication() (*Application, error) {
 		MinBalanceReserve: cfg.Risk.MinBalanceReserve,
 		MaxAPICallsPerMin: cfg.Risk.MaxAPICallsPerMin,
 	}
-	riskMgr := service.NewRiskManager(riskLimits, binanceClient)
+	app.spotRiskMgr = service.NewRiskManager(riskLimits, spotClient)
 
 	// Initialize trading service
-	tradingService := service.NewTradingService(binanceClient, riskMgr, orderRepo, log)
+	app.spotTradingService = service.NewSpotTradingService(spotClient, app.spotRiskMgr, app.spotOrderRepo, log)
 
-	// Initialize market data service with 1 second cache TTL
-	marketService := service.NewMarketDataService(binanceClient, 1*time.Second)
+	// Initialize market data service
+	app.spotMarketService = service.NewMarketDataService(spotClient, 1*time.Second)
+
+	// Initialize conditional order repository
+	conditionalOrderRepo := repository.NewMemoryConditionalOrderRepository()
+
+	// Initialize stop order repository
+	stopOrderRepo := repository.NewMemoryStopOrderRepository()
+
+	// Initialize trigger engine
+	triggerEngine := service.NewTriggerEngine()
+
+	// Initialize stop loss service
+	app.spotStopLossSvc = service.NewStopLossService(
+		stopOrderRepo,
+		triggerEngine,
+		app.spotTradingService,
+		app.spotMarketService,
+		log,
+	)
+
+	// Initialize conditional order service
+	app.spotConditionalOrderSvc = service.NewConditionalOrderService(
+		conditionalOrderRepo,
+		stopOrderRepo,
+		triggerEngine,
+		app.spotTradingService,
+		app.spotMarketService,
+		app.spotStopLossSvc,
+		log,
+	)
 
 	// Initialize CLI
-	cliApp := cli.NewCLI(tradingService, marketService, log)
+	app.cli = cli.NewCLI(app.spotTradingService, app.spotMarketService, app.spotConditionalOrderSvc, app.spotStopLossSvc, log)
 
-	return &Application{
-		config:         cfg,
-		logger:         log,
-		binanceClient:  binanceClient,
-		tradingService: tradingService,
-		marketService:  marketService,
-		orderRepo:      orderRepo,
-		riskMgr:        riskMgr,
-		cli:            cliApp,
-	}, nil
+	log.Info("Spot trading components initialized successfully", nil)
+	return nil
+}
+
+// initializeFuturesComponents initializes all futures trading components
+func initializeFuturesComponents(app *Application, cfg *config.Config, log logger.Logger) error {
+	// Futures config must be present
+	if cfg.Futures == nil {
+		return fmt.Errorf("futures configuration not found in config file")
+	}
+
+	log.Info("Initializing futures trading components", map[string]interface{}{
+		"base_url": cfg.Futures.BaseURL,
+		"testnet":  cfg.Futures.Testnet,
+	})
+
+	// Initialize authentication manager
+	authMgr, err := api.NewAuthManager(cfg.Futures.APIKey, cfg.Futures.APISecret)
+	if err != nil {
+		return fmt.Errorf("failed to initialize auth manager: %w", err)
+	}
+
+	// Initialize rate limiter
+	rateLimiter := api.NewRateLimiter(cfg.Futures.Risk.MaxAPICallsPerMin)
+
+	// Initialize HTTP client with retry configuration
+	retryConfig := api.RetryConfig{
+		MaxAttempts:       cfg.Retry.MaxAttempts,
+		InitialDelayMs:    cfg.Retry.InitialDelayMs,
+		BackoffMultiplier: cfg.Retry.BackoffMultiplier,
+	}
+	httpClient := api.NewHTTPClient(rateLimiter, retryConfig)
+
+	// Initialize Binance futures client
+	futuresClient, err := api.NewFuturesClient(cfg.Futures.BaseURL, httpClient, authMgr)
+	if err != nil {
+		return fmt.Errorf("failed to initialize futures client: %w", err)
+	}
+	app.futuresClient = futuresClient
+
+	// Initialize futures order repository
+	futuresOrderRepo := repository.NewMemoryFuturesOrderRepository()
+
+	// Initialize futures position repository
+	futuresPositionRepo := repository.NewMemoryFuturesPositionRepository()
+
+	// Initialize futures market data service
+	app.futuresMarketService = service.NewFuturesMarketDataService(futuresClient, log)
+
+	// Initialize futures position manager
+	app.futuresPositionManager = service.NewFuturesPositionManager(
+		futuresClient,
+		futuresPositionRepo,
+		log,
+	)
+
+	// Initialize futures risk manager
+	app.futuresRiskManager = service.NewFuturesRiskManager(
+		&cfg.Futures.Risk,
+		futuresClient,
+		app.futuresPositionManager,
+		log,
+	)
+
+	// Initialize futures trading service
+	app.futuresTradingService = service.NewFuturesTradingService(
+		futuresClient,
+		futuresOrderRepo,
+		log,
+	)
+
+	// Initialize trigger engine
+	triggerEngine := service.NewTriggerEngine()
+
+	// Initialize stop order repository
+	stopOrderRepo := repository.NewMemoryStopOrderRepository()
+
+	// Initialize futures stop loss service
+	app.futuresStopLossSvc = service.NewFuturesStopLossService(
+		stopOrderRepo,
+		triggerEngine,
+		app.futuresTradingService,
+		app.futuresMarketService,
+		log,
+	)
+
+	// Initialize futures conditional order service
+	app.futuresConditionalOrderSvc = service.NewFuturesConditionalOrderService(
+		futuresClient,
+		app.futuresMarketService,
+		app.futuresPositionManager,
+		app.futuresTradingService,
+		log,
+	)
+
+	// Initialize futures funding service
+	app.futuresFundingService = service.NewFuturesFundingService(
+		app.futuresMarketService,
+		log,
+	)
+
+	// Initialize CLI (futures CLI would need to be implemented separately)
+	// For now, we'll use a placeholder or the spot CLI
+	// TODO: Implement futures-specific CLI
+	app.cli = nil // Futures CLI not yet implemented
+
+	log.Info("Futures trading components initialized successfully", nil)
+	return nil
 }
 
 // run starts the application
 func (app *Application) run(ctx context.Context) error {
-	// Set up panic recovery for the CLI
+	// Set up panic recovery
 	defer func() {
 		if r := recover(); r != nil {
 			app.logger.Error("Panic recovered in application run", map[string]interface{}{
@@ -198,9 +417,64 @@ func (app *Application) run(ctx context.Context) error {
 		}
 	}()
 
+	switch app.tradingType {
+	case config.TradingTypeSpot:
+		return app.runSpot(ctx)
+	case config.TradingTypeFutures:
+		return app.runFutures(ctx)
+	default:
+		return fmt.Errorf("unknown trading type: %s", app.tradingType)
+	}
+}
+
+// runSpot runs the spot trading application
+func (app *Application) runSpot(ctx context.Context) error {
+	// Start monitoring engine for conditional orders
+	app.logger.Info("Starting spot conditional order monitoring", nil)
+	if err := app.spotConditionalOrderSvc.StartMonitoring(); err != nil {
+		return fmt.Errorf("failed to start conditional order monitoring: %w", err)
+	}
+
 	// Run CLI
-	if err := app.cli.Run(); err != nil {
-		return fmt.Errorf("CLI error: %w", err)
+	if app.cli != nil {
+		if err := app.cli.Run(); err != nil {
+			return fmt.Errorf("CLI error: %w", err)
+		}
+	}
+
+	return nil
+}
+
+// runFutures runs the futures trading application
+func (app *Application) runFutures(ctx context.Context) error {
+	app.logger.Info("Starting futures trading system", nil)
+	
+	// Start monitoring for futures conditional orders
+	if app.futuresConditionalOrderSvc != nil {
+		app.logger.Info("Starting futures conditional order monitoring", nil)
+		if err := app.futuresConditionalOrderSvc.StartMonitoring(); err != nil {
+			return fmt.Errorf("failed to start futures conditional order monitoring: %w", err)
+		}
+	}
+
+	// Start funding rate monitoring
+	if app.futuresFundingService != nil {
+		app.logger.Info("Starting funding rate monitoring", nil)
+		checkInterval := time.Duration(app.config.Futures.Monitoring.FundingRateCheckIntervalMs) * time.Millisecond
+		if err := app.futuresFundingService.StartMonitoring(checkInterval); err != nil {
+			return fmt.Errorf("failed to start funding rate monitoring: %w", err)
+		}
+	}
+
+	// Run CLI if available
+	if app.cli != nil {
+		if err := app.cli.Run(); err != nil {
+			return fmt.Errorf("CLI error: %w", err)
+		}
+	} else {
+		// If no CLI, just wait for context cancellation
+		app.logger.Info("Futures system running (CLI not implemented yet)", nil)
+		<-ctx.Done()
 	}
 
 	return nil
@@ -214,22 +488,16 @@ func (app *Application) shutdown(ctx context.Context) error {
 	done := make(chan error, 1)
 
 	go func() {
-		// Perform cleanup operations
 		var shutdownErr error
 
-		// Log final statistics
-		app.logger.Info("Shutdown: Logging final statistics", nil)
-
-		// Close any open resources
-		// Note: In this implementation, most resources are automatically cleaned up
-		// In a production system, you might need to:
-		// - Close database connections
-		// - Flush pending logs
-		// - Cancel pending API requests
-		// - Save state to disk
+		switch app.tradingType {
+		case config.TradingTypeSpot:
+			shutdownErr = app.shutdownSpot()
+		case config.TradingTypeFutures:
+			shutdownErr = app.shutdownFutures()
+		}
 
 		app.logger.Info("Shutdown: All resources cleaned up", nil)
-
 		done <- shutdownErr
 	}()
 
@@ -244,4 +512,55 @@ func (app *Application) shutdown(ctx context.Context) error {
 	case <-ctx.Done():
 		return fmt.Errorf("shutdown timeout exceeded")
 	}
+}
+
+// shutdownSpot performs graceful shutdown of spot components
+func (app *Application) shutdownSpot() error {
+	app.logger.Info("Shutdown: Stopping spot conditional order monitoring", nil)
+	
+	if app.spotConditionalOrderSvc != nil {
+		if err := app.spotConditionalOrderSvc.StopMonitoring(); err != nil {
+			if err.Error() == "monitoring engine not running" {
+				app.logger.Debug("Spot monitoring was not running during shutdown", nil)
+			} else {
+				app.logger.Error("Error stopping spot conditional order monitoring", map[string]interface{}{
+					"error": err.Error(),
+				})
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// shutdownFutures performs graceful shutdown of futures components
+func (app *Application) shutdownFutures() error {
+	app.logger.Info("Shutdown: Stopping futures services", nil)
+	
+	// Stop conditional order monitoring
+	if app.futuresConditionalOrderSvc != nil {
+		if err := app.futuresConditionalOrderSvc.StopMonitoring(); err != nil {
+			if err.Error() != "monitoring engine not running" {
+				app.logger.Error("Error stopping futures conditional order monitoring", map[string]interface{}{
+					"error": err.Error(),
+				})
+				return err
+			}
+		}
+	}
+
+	// Stop funding rate monitoring
+	if app.futuresFundingService != nil {
+		if err := app.futuresFundingService.StopMonitoring(); err != nil {
+			if err.Error() != "monitoring not running" {
+				app.logger.Error("Error stopping funding rate monitoring", map[string]interface{}{
+					"error": err.Error(),
+				})
+				return err
+			}
+		}
+	}
+
+	return nil
 }

@@ -2,8 +2,8 @@
 # 币安自动交易系统配置示例
 
 # ============================================
-# Binance API Configuration
-# 币安API配置
+# Binance API Configuration (Legacy - for backward compatibility)
+# 币安API配置（旧版 - 用于向后兼容）
 # ============================================
 binance:
   # API credentials (use environment variables for security)
@@ -20,6 +20,129 @@ binance:
   # Use testnet (set to true for testing)
   # 使用测试网（测试时设为true）
   testnet: false
+
+# ============================================
+# Spot Trading Configuration
+# 现货交易配置
+# ============================================
+spot:
+  # API credentials (use environment variables for security)
+  # API凭证（使用环境变量以确保安全）
+  api_key: ${BINANCE_SPOT_API_KEY}
+  api_secret: ${BINANCE_SPOT_API_SECRET}
+  
+  # API base URL
+  # API基础URL
+  # Production: https://api.binance.com
+  # Testnet: https://testnet.binance.vision
+  base_url: https://api.binance.com
+  
+  # Use testnet (set to true for testing)
+  # 使用测试网（测试时设为true）
+  testnet: false
+
+# ============================================
+# Futures Trading Configuration
+# 合约交易配置
+# ============================================
+futures:
+  # API credentials (use environment variables for security)
+  # API凭证（使用环境变量以确保安全）
+  # Note: Can use same API key as spot or separate keys
+  # 注意：可以使用与现货相同的API密钥或单独的密钥
+  api_key: ${BINANCE_FUTURES_API_KEY}
+  api_secret: ${BINANCE_FUTURES_API_SECRET}
+  
+  # API base URL for futures
+  # 合约API基础URL
+  # Production: https://fapi.binance.com
+  # Testnet: https://testnet.binancefuture.com
+  base_url: https://fapi.binance.com
+  
+  # Use testnet (set to true for testing)
+  # 使用测试网（测试时设为true）
+  testnet: false
+  
+  # Default leverage (1-125x)
+  # 默认杠杆倍数（1-125倍）
+  default_leverage: 10
+  
+  # Default margin type: CROSSED or ISOLATED
+  # 默认保证金类型：全仓或逐仓
+  default_margin_type: CROSSED
+  
+  # Dual side position mode
+  # 双向持仓模式
+  # true: Can hold both long and short positions simultaneously
+  # false: Single direction position mode
+  # true：可同时持有多头和空头持仓
+  # false：单向持仓模式
+  dual_side_position: false
+  
+  # Futures-specific risk management
+  # 合约特定风险管理
+  risk:
+    # Maximum order value in USDT
+    # 单笔最大订单价值（USDT）
+    max_order_value: 50000.0
+    
+    # Maximum total position value in USDT
+    # 最大总持仓价值（USDT）
+    max_position_value: 100000.0
+    
+    # Maximum leverage allowed (1-125)
+    # 允许的最大杠杆倍数（1-125）
+    max_leverage: 20
+    
+    # Minimum margin ratio (0-1)
+    # 最小保证金率（0-1）
+    # Warning triggered when margin ratio falls below this
+    # 当保证金率低于此值时触发警告
+    min_margin_ratio: 0.05
+    
+    # Liquidation buffer (0-1)
+    # 强平缓冲区（0-1）
+    # Minimum distance between current price and liquidation price (as percentage)
+    # 当前价格与强平价格之间的最小距离（百分比）
+    liquidation_buffer: 0.02
+    
+    # Maximum number of orders per day
+    # 每日最大订单数量
+    max_daily_orders: 200
+    
+    # Maximum API calls per minute
+    # 每分钟最大API调用次数
+    max_api_calls_per_min: 2000
+  
+  # Monitoring intervals
+  # 监控间隔
+  monitoring:
+    # Position update interval in milliseconds
+    # 持仓更新间隔（毫秒）
+    position_update_interval_ms: 5000
+    
+    # Conditional order check interval in milliseconds
+    # 条件订单检查间隔（毫秒）
+    conditional_order_interval_ms: 1000
+    
+    # Funding rate check interval in milliseconds
+    # 资金费率检查间隔（毫秒）
+    funding_rate_check_interval_ms: 60000
+  
+  # Stop loss configuration for futures
+  # 合约止损配置
+  stop_loss:
+    # Default callback rate for trailing stop (percentage)
+    # 移动止损的默认回调幅度（百分比）
+    default_callback_rate: 1.0
+    
+    # Minimum callback rate
+    # 最小回调幅度
+    min_callback_rate: 0.1
+    
+    # Maximum callback rate
+    # 最大回调幅度
+    max_callback_rate: 5.0
 
 # ============================================
 # Risk Management Configuration
@@ -91,37 +214,130 @@ retry:
   backoff_multiplier: 2.0
 
 # ============================================
+# Conditional Orders Configuration
+# 条件订单配置
+# ============================================
+conditional_orders:
+  # Monitoring interval in milliseconds
+  # 监控间隔（毫秒）
+  # How often to check if trigger conditions are met
+  # 检查触发条件的频率
+  monitoring_interval_ms: 1000
+  
+  # Maximum number of active conditional orders
+  # 最大活跃条件订单数量
+  # Limits the number of conditional orders that can be monitored simultaneously
+  # 限制可同时监控的条件订单数量
+  max_active_orders: 500
+  
+  # Trigger execution timeout in milliseconds
+  # 触发执行超时（毫秒）
+  # Maximum time to wait for order execution after trigger
+  # 触发后等待订单执行的最长时间
+  trigger_execution_timeout_ms: 3000
+  
+  # Enable smart polling
+  # 启用智能轮询
+  # Adjusts polling frequency based on how close conditions are to triggering
+  # 根据条件接近触发的程度调整轮询频率
+  enable_smart_polling: true
+
+# ============================================
+# Stop Loss Configuration
+# 止损配置
+# ============================================
+stop_loss:
+  # Default trailing stop percentage
+  # 默认移动止损百分比
+  # Default percentage for trailing stop orders
+  # 移动止损订单的默认百分比
+  default_trail_percent: 2.0
+  
+  # Minimum trailing stop percentage
+  # 最小移动止损百分比
+  # Minimum allowed value for trailing stop
+  # 移动止损的最小允许值
+  min_trail_percent: 0.1
+  
+  # Maximum trailing stop percentage
+  # 最大移动止损百分比
+  # Maximum allowed value for trailing stop
+  # 移动止损的最大允许值
+  max_trail_percent: 10.0
+  
+  # Update interval in milliseconds
+  # 更新间隔（毫秒）
+  # How often to check and update trailing stop prices
+  # 检查和更新移动止损价格的频率
+  update_interval_ms: 500
+
+# ============================================
 # Configuration Notes / 配置说明
 # ============================================
 #
 # 1. Environment Variables / 环境变量:
-#    - BINANCE_API_KEY: Your Binance API key
-#    - BINANCE_API_SECRET: Your Binance API secret
+#    - BINANCE_API_KEY: Your Binance API key (legacy)
+#    - BINANCE_API_SECRET: Your Binance API secret (legacy)
+#    - BINANCE_SPOT_API_KEY: Your Binance spot API key
+#    - BINANCE_SPOT_API_SECRET: Your Binance spot API secret
+#    - BINANCE_FUTURES_API_KEY: Your Binance futures API key
+#    - BINANCE_FUTURES_API_SECRET: Your Binance futures API secret
 #    - CONFIG_FILE: Path to this config file (optional)
 #    - LOG_LEVEL: Override logging level (optional)
 #
-# 2. Testnet Setup / 测试网设置:
-#    - Get testnet API keys from: https://testnet.binance.vision/
-#    - Set base_url to: https://testnet.binance.vision
-#    - Set testnet to: true
+# 2. Configuration Modes / 配置模式:
+#    - Legacy mode: Use 'binance' section only (backward compatible)
+#    - Spot only: Use 'spot' section only
+#    - Futures only: Use 'futures' section only
+#    - Both: Use both 'spot' and 'futures' sections for dual trading
 #
-# 3. Security Best Practices / 安全最佳实践:
+# 3. Testnet Setup / 测试网设置:
+#    Spot Testnet:
+#    - Get testnet API keys from: https://testnet.binance.vision/
+#    - Set spot.base_url to: https://testnet.binance.vision
+#    - Set spot.testnet to: true
+#    
+#    Futures Testnet:
+#    - Get testnet API keys from: https://testnet.binancefuture.com/
+#    - Set futures.base_url to: https://testnet.binancefuture.com
+#    - Set futures.testnet to: true
+#
+# 4. Security Best Practices / 安全最佳实践:
 #    - Never commit API keys to version control
 #    - Use environment variables for sensitive data
 #    - Enable IP whitelist on Binance API settings
 #    - Start with read-only API keys for testing
 #    - Use testnet before production
+#    - Consider using separate API keys for spot and futures
 #
-# 4. Risk Management Tips / 风险管理提示:
+# 5. Risk Management Tips / 风险管理提示:
+#    Spot Trading:
 #    - Start with small max_order_amount
 #    - Set conservative min_balance_reserve
+#    
+#    Futures Trading:
+#    - Start with low leverage (1-5x)
+#    - Set strict max_position_value limits
+#    - Monitor liquidation_buffer closely
+#    - Use stop loss orders for all positions
+#    - Be aware of funding rate costs
+#    
+#    General:
 #    - Monitor logs regularly
 #    - Test thoroughly on testnet first
+#    - Start with small amounts in production
 #
-# 5. Performance Tuning / 性能调优:
+# 6. Performance Tuning / 性能调优:
 #    - Adjust max_api_calls_per_min based on your needs
 #    - Lower values = safer but slower
 #    - Higher values = faster but risk rate limiting
-#    - Binance limit is 1200 requests/minute
+#    - Spot limit: 1200 requests/minute
+#    - Futures limit: 2400 requests/minute
+#
+# 7. Dual Trading Mode / 双交易模式:
+#    - Both spot and futures can run simultaneously
+#    - Each uses independent configuration
+#    - Logs can be separated using spot_file and futures_file
+#    - Use different entry points: 'binance-trader spot' or 'binance-trader futures'
 #
 # ============================================

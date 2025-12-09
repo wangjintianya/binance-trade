@@ -20,3 +20,15 @@ retry:
   max_attempts: 3
   initial_delay_ms: 1000
   backoff_multiplier: 2.0
+
+conditional_orders:
+  monitoring_interval_ms: 1000
+  max_active_orders: 500
+  trigger_execution_timeout_ms: 3000
+  enable_smart_polling: true
+
+stop_loss:
+  default_trail_percent: 2.0
+  min_trail_percent: 0.1
+  max_trail_percent: 10.0
+  update_interval_ms: 500

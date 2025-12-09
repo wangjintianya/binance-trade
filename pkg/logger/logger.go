@@ -25,6 +25,15 @@ type Logger interface {
 	LogAPIOperation(operationType string, result string, fields map[string]interface{})
 	LogOrderEvent(eventType string, orderID int64, symbol, side, orderType string, quantity float64, fields map[string]interface{})
 	LogError(err error, context map[string]interface{})
+	
+	// Futures-specific logging methods
+	LogFuturesAPIOperation(operationType string, result string, fields map[string]interface{})
+	LogFuturesOrderEvent(eventType string, orderID int64, symbol, side, orderType string, quantity float64, positionChange map[string]interface{}, fields map[string]interface{})
+	LogLiquidationEvent(symbol string, positionSide string, liquidationPrice float64, lossAmount float64, reason string, fields map[string]interface{})
+	LogFundingRateSettlement(symbol string, fundingFee float64, fundingRate float64, positionSize float64, fields map[string]interface{})
+	
+	// Set trading type for log entries
+	SetTradingType(tradingType string)
 }
 
 // Config holds logger configuration
@@ -34,15 +43,17 @@ type Config struct {
 	MaxSizeMB     int64  // max size in MB before rotation
 	MaxBackups    int    // max number of backup files
 	EnableConsole bool   // also log to console
+	TradingType   string // trading type marker (spot, futures)
 }
 
 // logrusLogger implements Logger interface using logrus
 type logrusLogger struct {
-	logger     *logrus.Logger
-	config     Config
-	mu         sync.Mutex
+	logger      *logrus.Logger
+	config      Config
+	mu          sync.Mutex
 	currentSize int64
 	fileHandle  *os.File
+	tradingType string
 }
 
 // sensitivePatterns are regex patterns for sensitive information
@@ -75,8 +86,9 @@ func NewLogger(config Config) (Logger, error) {
 	})
 	
 	logger := &logrusLogger{
-		logger: log,
-		config: config,
+		logger:      log,
+		config:      config,
+		tradingType: config.TradingType,
 	}
 	
 	// Setup output
@@ -241,6 +253,14 @@ func (l *logrusLogger) log(level logrus.Level, msg string, fields map[string]int
 	maskedMsg := maskSensitiveInfo(msg)
 	maskedFields := maskSensitiveFields(fields)
 	
+	// Add trading type marker if set
+	if l.tradingType != "" {
+		if maskedFields == nil {
+			maskedFields = make(map[string]interface{})
+		}
+		maskedFields["trading_type"] = l.tradingType
+	}
+	
 	// Create entry with fields
 	entry := l.logger.WithFields(logrus.Fields(maskedFields))
 	
@@ -319,4 +339,73 @@ func (l *logrusLogger) LogError(err error, context map[string]interface{}) {
 	context["error"] = err.Error()
 	
 	l.Error("Error occurred", context)
+}
+
+// SetTradingType sets the trading type marker for all log entries
+func (l *logrusLogger) SetTradingType(tradingType string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.tradingType = tradingType
+}
+
+// LogFuturesAPIOperation logs futures API operations with required fields
+func (l *logrusLogger) LogFuturesAPIOperation(operationType string, result string, fields map[string]interface{}) {
+	if fields == nil {
+		fields = make(map[string]interface{})
+	}
+	fields["operation_type"] = operationType
+	fields["result"] = result
+	fields["timestamp"] = time.Now().Unix()
+	fields["api_type"] = "futures"
+	
+	l.Info("Futures API operation", fields)
+}
+
+// LogFuturesOrderEvent logs futures order events with complete details including position changes
+func (l *logrusLogger) LogFuturesOrderEvent(eventType string, orderID int64, symbol, side, orderType string, quantity float64, positionChange map[string]interface{}, fields map[string]interface{}) {
+	if fields == nil {
+		fields = make(map[string]interface{})
+	}
+	fields["event_type"] = eventType
+	fields["order_id"] = orderID
+	fields["symbol"] = symbol
+	fields["side"] = side
+	fields["order_type"] = orderType
+	fields["quantity"] = quantity
+	
+	// Add position change information
+	if positionChange != nil {
+		fields["position_change"] = positionChange
+	}
+	
+	l.Info("Futures order event", fields)
+}
+
+// LogLiquidationEvent logs liquidation events with complete details
+func (l *logrusLogger) LogLiquidationEvent(symbol string, positionSide string, liquidationPrice float64, lossAmount float64, reason string, fields map[string]interface{}) {
+	if fields == nil {
+		fields = make(map[string]interface{})
+	}
+	fields["symbol"] = symbol
+	fields["position_side"] = positionSide
+	fields["liquidation_price"] = liquidationPrice
+	fields["loss_amount"] = lossAmount
+	fields["reason"] = reason
+	fields["timestamp"] = time.Now().Unix()
+	
+	l.Error("Liquidation event", fields)
+}
+
+// LogFundingRateSettlement logs funding rate settlement events
+func (l *logrusLogger) LogFundingRateSettlement(symbol string, fundingFee float64, fundingRate float64, positionSize float64, fields map[string]interface{}) {
+	if fields == nil {
+		fields = make(map[string]interface{})
+	}
+	fields["symbol"] = symbol
+	fields["funding_fee"] = fundingFee
+	fields["funding_rate"] = fundingRate
+	fields["position_size"] = positionSize
+	fields["timestamp"] = time.Now().Unix()
+	
+	l.Info("Funding rate settlement", fields)
 }

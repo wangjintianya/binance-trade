@@ -1,2 +1,3 @@
 {"base_url":"https://api.binance.com","config_file":"config.yaml","level":"info","message":"Starting Binance Auto-Trading System","testnet":false,"timestamp":"2025-12-04T09:37:20+08:00"}
 {"level":"info","message":"System initialized successfully","timestamp":"2025-12-04T09:37:20+08:00"}
+{"level":"info","message":"Received shutdown signal","signal":"terminated","timestamp":"2025-12-05T10:46:30+08:00"}

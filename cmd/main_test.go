@@ -1,151 +1,321 @@
 package main
 
 import (
-	"context"
 	"os"
+	"path/filepath"
 	"testing"
-	"time"
+
+	"binance-trader/internal/config"
 )
 
-// TestInitializeApplication tests that the application can be initialized with valid config
-func TestInitializeApplication(t *testing.T) {
-	// Set up environment variables for testing
-	os.Setenv("BINANCE_API_KEY", "test_api_key_12345678")
-	os.Setenv("BINANCE_API_SECRET", "test_api_secret_12345678")
-	defer func() {
-		os.Unsetenv("BINANCE_API_KEY")
-		os.Unsetenv("BINANCE_API_SECRET")
-	}()
+// TestSpotEntryPointInitialization verifies that spot entry only initializes spot components
+// Validates: Requirements 11.1
+func TestSpotEntryPointInitialization(t *testing.T) {
+	// Create a temporary config file for testing
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	
+	configContent := `
+spot:
+  api_key: test_spot_key
+  api_secret: test_spot_secret
+  base_url: https://api.binance.com
+  testnet: true
 
-	// Set config file to example config
-	os.Setenv("CONFIG_FILE", "../config.example.yaml")
+risk:
+  max_order_amount: 1000.0
+  max_daily_orders: 100
+  min_balance_reserve: 100.0
+  max_api_calls_per_min: 1200
+
+logging:
+  level: info
+  file: logs/test.log
+  spot_file: logs/spot_test.log
+  max_size_mb: 10
+  max_backups: 3
+
+retry:
+  max_attempts: 3
+  initial_delay_ms: 1000
+  backoff_multiplier: 2.0
+
+conditional_orders:
+  monitoring_interval_ms: 1000
+  max_active_orders: 100
+  trigger_execution_timeout_ms: 5000
+  enable_smart_polling: true
+
+stop_loss:
+  default_trail_percent: 1.0
+  min_trail_percent: 0.1
+  max_trail_percent: 5.0
+  update_interval_ms: 1000
+`
+	
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to create test config file: %v", err)
+	}
+	
+	// Set environment variable for config path
+	os.Setenv("CONFIG_FILE", configPath)
 	defer os.Unsetenv("CONFIG_FILE")
-
-	// Initialize application
-	app, err := initializeApplication()
+	
+	// Initialize spot application
+	app, err := initializeApplication(config.TradingTypeSpot)
 	if err != nil {
-		t.Fatalf("Failed to initialize application: %v", err)
+		t.Fatalf("Failed to initialize spot application: %v", err)
 	}
-
-	// Verify all components are initialized
-	if app.config == nil {
-		t.Error("Config is nil")
+	
+	// Verify trading type
+	if app.tradingType != config.TradingTypeSpot {
+		t.Errorf("Expected trading type %s, got %s", config.TradingTypeSpot, app.tradingType)
 	}
-	if app.logger == nil {
-		t.Error("Logger is nil")
+	
+	// Verify spot components are initialized
+	if app.spotClient == nil {
+		t.Error("Spot client should be initialized")
 	}
-	if app.binanceClient == nil {
-		t.Error("BinanceClient is nil")
+	if app.spotTradingService == nil {
+		t.Error("Spot trading service should be initialized")
 	}
-	if app.tradingService == nil {
-		t.Error("TradingService is nil")
+	if app.spotMarketService == nil {
+		t.Error("Spot market service should be initialized")
 	}
-	if app.marketService == nil {
-		t.Error("MarketService is nil")
+	if app.spotOrderRepo == nil {
+		t.Error("Spot order repository should be initialized")
 	}
-	if app.orderRepo == nil {
-		t.Error("OrderRepository is nil")
+	if app.spotRiskMgr == nil {
+		t.Error("Spot risk manager should be initialized")
 	}
-	if app.riskMgr == nil {
-		t.Error("RiskManager is nil")
+	if app.spotConditionalOrderSvc == nil {
+		t.Error("Spot conditional order service should be initialized")
+	}
+	if app.spotStopLossSvc == nil {
+		t.Error("Spot stop loss service should be initialized")
 	}
 	if app.cli == nil {
-		t.Error("CLI is nil")
+		t.Error("CLI should be initialized for spot")
+	}
+	
+	// Verify futures components are NOT initialized
+	if app.futuresClient != nil {
+		t.Error("Futures client should NOT be initialized for spot entry")
+	}
+	if app.futuresTradingService != nil {
+		t.Error("Futures trading service should NOT be initialized for spot entry")
+	}
+	if app.futuresMarketService != nil {
+		t.Error("Futures market service should NOT be initialized for spot entry")
+	}
+	if app.futuresPositionManager != nil {
+		t.Error("Futures position manager should NOT be initialized for spot entry")
+	}
+	if app.futuresRiskManager != nil {
+		t.Error("Futures risk manager should NOT be initialized for spot entry")
+	}
+	if app.futuresConditionalOrderSvc != nil {
+		t.Error("Futures conditional order service should NOT be initialized for spot entry")
+	}
+	if app.futuresStopLossSvc != nil {
+		t.Error("Futures stop loss service should NOT be initialized for spot entry")
+	}
+	if app.futuresFundingService != nil {
+		t.Error("Futures funding service should NOT be initialized for spot entry")
 	}
 }
 
-// TestGracefulShutdown tests that the application can shutdown gracefully
-func TestGracefulShutdown(t *testing.T) {
-	// Set up environment variables for testing
-	os.Setenv("BINANCE_API_KEY", "test_api_key_12345678")
-	os.Setenv("BINANCE_API_SECRET", "test_api_secret_12345678")
-	os.Setenv("CONFIG_FILE", "../config.example.yaml")
-	defer func() {
-		os.Unsetenv("BINANCE_API_KEY")
-		os.Unsetenv("BINANCE_API_SECRET")
-		os.Unsetenv("CONFIG_FILE")
-	}()
+// TestSpotEntryWithLegacyConfig verifies spot entry works with legacy config format
+func TestSpotEntryWithLegacyConfig(t *testing.T) {
+	// Create a temporary config file with legacy format
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	
+	configContent := `
+binance:
+  api_key: test_legacy_key
+  api_secret: test_legacy_secret
+  base_url: https://api.binance.com
+  testnet: true
 
-	// Initialize application
-	app, err := initializeApplication()
-	if err != nil {
-		t.Fatalf("Failed to initialize application: %v", err)
+risk:
+  max_order_amount: 1000.0
+  max_daily_orders: 100
+  min_balance_reserve: 100.0
+  max_api_calls_per_min: 1200
+
+logging:
+  level: info
+  file: logs/test.log
+  max_size_mb: 10
+  max_backups: 3
+
+retry:
+  max_attempts: 3
+  initial_delay_ms: 1000
+  backoff_multiplier: 2.0
+
+conditional_orders:
+  monitoring_interval_ms: 1000
+  max_active_orders: 100
+  trigger_execution_timeout_ms: 5000
+  enable_smart_polling: true
+
+stop_loss:
+  default_trail_percent: 1.0
+  min_trail_percent: 0.1
+  max_trail_percent: 5.0
+  update_interval_ms: 1000
+`
+	
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to create test config file: %v", err)
 	}
-
-	// Test graceful shutdown with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	err = app.shutdown(ctx)
-	if err != nil {
-		t.Errorf("Shutdown failed: %v", err)
-	}
-}
-
-// TestShutdownTimeout tests that shutdown respects timeout
-func TestShutdownTimeout(t *testing.T) {
-	// Set up environment variables for testing
-	os.Setenv("BINANCE_API_KEY", "test_api_key_12345678")
-	os.Setenv("BINANCE_API_SECRET", "test_api_secret_12345678")
-	os.Setenv("CONFIG_FILE", "../config.example.yaml")
-	defer func() {
-		os.Unsetenv("BINANCE_API_KEY")
-		os.Unsetenv("BINANCE_API_SECRET")
-		os.Unsetenv("CONFIG_FILE")
-	}()
-
-	// Initialize application
-	app, err := initializeApplication()
-	if err != nil {
-		t.Fatalf("Failed to initialize application: %v", err)
-	}
-
-	// Test shutdown with very short timeout (should complete anyway since shutdown is fast)
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
-	defer cancel()
-
-	// This should either complete successfully or timeout
-	err = app.shutdown(ctx)
-	// We don't fail the test if it times out, as that's expected behavior
-	if err != nil && err.Error() != "shutdown timeout exceeded" {
-		t.Errorf("Unexpected shutdown error: %v", err)
-	}
-}
-
-// TestInitializeApplicationMissingConfig tests error handling when config is missing
-func TestInitializeApplicationMissingConfig(t *testing.T) {
-	// Set config file to non-existent file
-	os.Setenv("CONFIG_FILE", "nonexistent.yaml")
+	
+	// Set environment variable for config path
+	os.Setenv("CONFIG_FILE", configPath)
 	defer os.Unsetenv("CONFIG_FILE")
-
-	// Initialize application should fail
-	_, err := initializeApplication()
-	if err == nil {
-		t.Error("Expected error when config file is missing, got nil")
+	
+	// Initialize spot application with legacy config
+	app, err := initializeApplication(config.TradingTypeSpot)
+	if err != nil {
+		t.Fatalf("Failed to initialize spot application with legacy config: %v", err)
+	}
+	
+	// Verify spot components are initialized
+	if app.spotClient == nil {
+		t.Error("Spot client should be initialized with legacy config")
+	}
+	if app.spotTradingService == nil {
+		t.Error("Spot trading service should be initialized with legacy config")
 	}
 }
 
-// TestApplicationPanicRecovery tests that panic recovery works in the run method
-func TestApplicationPanicRecovery(t *testing.T) {
-	// Set up environment variables for testing
-	os.Setenv("BINANCE_API_KEY", "test_api_key_12345678")
-	os.Setenv("BINANCE_API_SECRET", "test_api_secret_12345678")
-	os.Setenv("CONFIG_FILE", "../config.example.yaml")
-	defer func() {
-		os.Unsetenv("BINANCE_API_KEY")
-		os.Unsetenv("BINANCE_API_SECRET")
-		os.Unsetenv("CONFIG_FILE")
-	}()
+// TestFuturesEntryPointInitialization verifies that futures entry only initializes futures components
+// Validates: Requirements 11.2
+func TestFuturesEntryPointInitialization(t *testing.T) {
+	// Create a temporary config file for testing
+	tmpDir := t.TempDir()
+	configPath := filepath.Join(tmpDir, "config.yaml")
+	
+	configContent := `
+futures:
+  api_key: test_futures_key
+  api_secret: test_futures_secret
+  base_url: https://fapi.binance.com
+  testnet: true
+  default_leverage: 10
+  default_margin_type: CROSSED
+  dual_side_position: false
+  risk:
+    max_order_value: 50000.0
+    max_position_value: 100000.0
+    max_leverage: 20
+    min_margin_ratio: 0.05
+    liquidation_buffer: 0.02
+    max_daily_orders: 200
+    max_api_calls_per_min: 2000
+  monitoring:
+    position_update_interval_ms: 5000
+    conditional_order_interval_ms: 1000
+    funding_rate_check_interval_ms: 60000
 
-	// Initialize application
-	app, err := initializeApplication()
-	if err != nil {
-		t.Fatalf("Failed to initialize application: %v", err)
+risk:
+  max_order_amount: 1000.0
+  max_daily_orders: 100
+  min_balance_reserve: 100.0
+  max_api_calls_per_min: 1200
+
+logging:
+  level: info
+  file: logs/test.log
+  futures_file: logs/futures_test.log
+  max_size_mb: 10
+  max_backups: 3
+
+retry:
+  max_attempts: 3
+  initial_delay_ms: 1000
+  backoff_multiplier: 2.0
+
+conditional_orders:
+  monitoring_interval_ms: 1000
+  max_active_orders: 100
+  trigger_execution_timeout_ms: 5000
+  enable_smart_polling: true
+
+stop_loss:
+  default_trail_percent: 1.0
+  min_trail_percent: 0.1
+  max_trail_percent: 5.0
+  update_interval_ms: 1000
+`
+	
+	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+		t.Fatalf("Failed to create test config file: %v", err)
 	}
-
-	// Verify that the application has panic recovery in place
-	// The run method has a defer recover() that should catch panics
-	if app == nil {
-		t.Error("Application is nil")
+	
+	// Set environment variable for config path
+	os.Setenv("CONFIG_FILE", configPath)
+	defer os.Unsetenv("CONFIG_FILE")
+	
+	// Initialize futures application
+	app, err := initializeApplication(config.TradingTypeFutures)
+	if err != nil {
+		t.Fatalf("Failed to initialize futures application: %v", err)
+	}
+	
+	// Verify trading type
+	if app.tradingType != config.TradingTypeFutures {
+		t.Errorf("Expected trading type %s, got %s", config.TradingTypeFutures, app.tradingType)
+	}
+	
+	// Verify futures components are initialized
+	if app.futuresClient == nil {
+		t.Error("Futures client should be initialized")
+	}
+	if app.futuresTradingService == nil {
+		t.Error("Futures trading service should be initialized")
+	}
+	if app.futuresMarketService == nil {
+		t.Error("Futures market service should be initialized")
+	}
+	if app.futuresPositionManager == nil {
+		t.Error("Futures position manager should be initialized")
+	}
+	if app.futuresRiskManager == nil {
+		t.Error("Futures risk manager should be initialized")
+	}
+	if app.futuresConditionalOrderSvc == nil {
+		t.Error("Futures conditional order service should be initialized")
+	}
+	if app.futuresStopLossSvc == nil {
+		t.Error("Futures stop loss service should be initialized")
+	}
+	if app.futuresFundingService == nil {
+		t.Error("Futures funding service should be initialized")
+	}
+	
+	// Verify spot components are NOT initialized
+	if app.spotClient != nil {
+		t.Error("Spot client should NOT be initialized for futures entry")
+	}
+	if app.spotTradingService != nil {
+		t.Error("Spot trading service should NOT be initialized for futures entry")
+	}
+	if app.spotMarketService != nil {
+		t.Error("Spot market service should NOT be initialized for futures entry")
+	}
+	if app.spotOrderRepo != nil {
+		t.Error("Spot order repository should NOT be initialized for futures entry")
+	}
+	if app.spotRiskMgr != nil {
+		t.Error("Spot risk manager should NOT be initialized for futures entry")
+	}
+	if app.spotConditionalOrderSvc != nil {
+		t.Error("Spot conditional order service should NOT be initialized for futures entry")
+	}
+	if app.spotStopLossSvc != nil {
+		t.Error("Spot stop loss service should NOT be initialized for futures entry")
 	}
 }

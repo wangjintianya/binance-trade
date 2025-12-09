@@ -297,3 +297,264 @@ func TestNewMarketDataService_DefaultCacheTTL(t *testing.T) {
 		t.Fatal("expected service to be created, got nil")
 	}
 }
+
+// TestGetVolume_Success tests successful volume retrieval
+func TestGetVolume_Success(t *testing.T) {
+	mockKlines := []*api.Kline{
+		{
+			OpenTime:  time.Now().Add(-5 * time.Minute).UnixMilli(),
+			Volume:    100.0,
+			CloseTime: time.Now().Add(-4 * time.Minute).UnixMilli(),
+		},
+		{
+			OpenTime:  time.Now().Add(-4 * time.Minute).UnixMilli(),
+			Volume:    150.0,
+			CloseTime: time.Now().Add(-3 * time.Minute).UnixMilli(),
+		},
+		{
+			OpenTime:  time.Now().Add(-3 * time.Minute).UnixMilli(),
+			Volume:    200.0,
+			CloseTime: time.Now().Add(-2 * time.Minute).UnixMilli(),
+		},
+	}
+	
+	mockClient := &mockBinanceClient{
+		getKlinesFunc: func(symbol string, interval string, limit int) ([]*api.Kline, error) {
+			return mockKlines, nil
+		},
+	}
+	
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	volume, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	expectedVolume := 450.0 // 100 + 150 + 200
+	if volume != expectedVolume {
+		t.Errorf("expected volume %f, got %f", expectedVolume, volume)
+	}
+}
+
+// TestGetVolume_EmptySymbol tests error handling for empty symbol
+func TestGetVolume_EmptySymbol(t *testing.T) {
+	mockClient := &mockBinanceClient{}
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	_, err := service.GetVolume("", 5*time.Minute)
+	if err == nil {
+		t.Fatal("expected error for empty symbol, got nil")
+	}
+}
+
+// TestGetVolume_InvalidTimeWindow tests error handling for invalid time window
+func TestGetVolume_InvalidTimeWindow(t *testing.T) {
+	mockClient := &mockBinanceClient{}
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	_, err := service.GetVolume("BTCUSDT", 0)
+	if err == nil {
+		t.Fatal("expected error for zero time window, got nil")
+	}
+	
+	_, err = service.GetVolume("BTCUSDT", -1*time.Minute)
+	if err == nil {
+		t.Fatal("expected error for negative time window, got nil")
+	}
+}
+
+// TestGetVolume_APIError tests error handling when API fails
+func TestGetVolume_APIError(t *testing.T) {
+	mockClient := &mockBinanceClient{
+		getKlinesFunc: func(symbol string, interval string, limit int) ([]*api.Kline, error) {
+			return nil, fmt.Errorf("API error")
+		},
+	}
+	
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	_, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err == nil {
+		t.Fatal("expected error when API fails, got nil")
+	}
+}
+
+// TestGetVolume_NoKlineData tests error handling when no kline data is available
+func TestGetVolume_NoKlineData(t *testing.T) {
+	mockClient := &mockBinanceClient{
+		getKlinesFunc: func(symbol string, interval string, limit int) ([]*api.Kline, error) {
+			return []*api.Kline{}, nil
+		},
+	}
+	
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	_, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err == nil {
+		t.Fatal("expected error when no kline data available, got nil")
+	}
+}
+
+// TestGetVolume_TimeWindowFiltering tests that only klines within time window are counted
+func TestGetVolume_TimeWindowFiltering(t *testing.T) {
+	now := time.Now()
+	
+	mockKlines := []*api.Kline{
+		{
+			OpenTime:  now.Add(-10 * time.Minute).UnixMilli(), // Outside window
+			Volume:    100.0,
+			CloseTime: now.Add(-9 * time.Minute).UnixMilli(),
+		},
+		{
+			OpenTime:  now.Add(-4 * time.Minute).UnixMilli(), // Inside window
+			Volume:    150.0,
+			CloseTime: now.Add(-3 * time.Minute).UnixMilli(),
+		},
+		{
+			OpenTime:  now.Add(-2 * time.Minute).UnixMilli(), // Inside window
+			Volume:    200.0,
+			CloseTime: now.Add(-1 * time.Minute).UnixMilli(),
+		},
+	}
+	
+	mockClient := &mockBinanceClient{
+		getKlinesFunc: func(symbol string, interval string, limit int) ([]*api.Kline, error) {
+			return mockKlines, nil
+		},
+	}
+	
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	volume, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	// Only the last two klines should be counted (within 5 minutes)
+	expectedVolume := 350.0 // 150 + 200
+	if volume != expectedVolume {
+		t.Errorf("expected volume %f, got %f", expectedVolume, volume)
+	}
+}
+
+// TestGetVolume_CacheHit tests that cache is used when valid
+func TestGetVolume_CacheHit(t *testing.T) {
+	callCount := 0
+	mockKlines := []*api.Kline{
+		{
+			OpenTime:  time.Now().Add(-2 * time.Minute).UnixMilli(),
+			Volume:    100.0,
+			CloseTime: time.Now().Add(-1 * time.Minute).UnixMilli(),
+		},
+	}
+	
+	mockClient := &mockBinanceClient{
+		getKlinesFunc: func(symbol string, interval string, limit int) ([]*api.Kline, error) {
+			callCount++
+			return mockKlines, nil
+		},
+	}
+	
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	// First call - should hit API
+	volume1, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	// Second call - should use cache
+	volume2, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	if volume1 != volume2 {
+		t.Errorf("expected same volume from cache, got %f and %f", volume1, volume2)
+	}
+	
+	if callCount != 1 {
+		t.Errorf("expected API to be called once, got %d calls", callCount)
+	}
+}
+
+// TestGetVolume_CacheExpiry tests that cache expires after TTL
+func TestGetVolume_CacheExpiry(t *testing.T) {
+	callCount := 0
+	
+	mockClient := &mockBinanceClient{
+		getKlinesFunc: func(symbol string, interval string, limit int) ([]*api.Kline, error) {
+			callCount++
+			// Return different volume each time
+			return []*api.Kline{
+				{
+					OpenTime:  time.Now().Add(-2 * time.Minute).UnixMilli(),
+					Volume:    100.0 + float64(callCount)*50,
+					CloseTime: time.Now().Add(-1 * time.Minute).UnixMilli(),
+				},
+			}, nil
+		},
+	}
+	
+	service := NewMarketDataService(mockClient, 50*time.Millisecond)
+	
+	// First call
+	volume1, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	// Wait for cache to expire
+	time.Sleep(100 * time.Millisecond)
+	
+	// Second call - should hit API again
+	volume2, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	if volume1 == volume2 {
+		t.Errorf("expected different volumes after cache expiry, got %f both times", volume1)
+	}
+	
+	if callCount != 2 {
+		t.Errorf("expected API to be called twice, got %d calls", callCount)
+	}
+}
+
+// TestGetVolume_DifferentTimeWindows tests that different time windows use different cache entries
+func TestGetVolume_DifferentTimeWindows(t *testing.T) {
+	callCount := 0
+	
+	mockClient := &mockBinanceClient{
+		getKlinesFunc: func(symbol string, interval string, limit int) ([]*api.Kline, error) {
+			callCount++
+			return []*api.Kline{
+				{
+					OpenTime:  time.Now().Add(-2 * time.Minute).UnixMilli(),
+					Volume:    100.0,
+					CloseTime: time.Now().Add(-1 * time.Minute).UnixMilli(),
+				},
+			}, nil
+		},
+	}
+	
+	service := NewMarketDataService(mockClient, 1*time.Second)
+	
+	// Call with 5 minute window
+	_, err := service.GetVolume("BTCUSDT", 5*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	// Call with 10 minute window - should hit API again
+	_, err = service.GetVolume("BTCUSDT", 10*time.Minute)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	
+	if callCount != 2 {
+		t.Errorf("expected API to be called twice for different time windows, got %d calls", callCount)
+	}
+}

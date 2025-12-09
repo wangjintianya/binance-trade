@@ -1,0 +1,36 @@
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization4271122557\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:04:20+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:04:20+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:04:20+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization4148890165\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:22:02+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:22:02+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:22:02+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization2377384977\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:22:13+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:22:13+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:22:13+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization398901508\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:29:04+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:29:04+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:29:04+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization3773650936\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:32:28+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:32:28+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:32:28+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization2754307042\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:32:39+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:32:39+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:32:39+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization3292285810\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:36:52+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:36:52+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:36:52+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization3623486883\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:39:53+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:39:53+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:39:53+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization3582061924\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:45:55+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:45:55+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:45:55+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization3268117408\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:49:12+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:49:12+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:49:12+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization3127547491\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:51:49+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:51:49+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:51:49+08:00","trading_type":"spot"}
+{"config_file":"E:\\temp\\TestSpotEntryPointInitialization499337467\\001\\config.yaml","level":"info","message":"Starting Binance Auto-Trading System","timestamp":"2025-12-09T16:54:03+08:00","trading_type":"spot"}
+{"base_url":"https://api.binance.com","level":"info","message":"Initializing spot trading components","testnet":true,"timestamp":"2025-12-09T16:54:03+08:00","trading_type":"spot"}
+{"level":"info","message":"Spot trading components initialized successfully","timestamp":"2025-12-09T16:54:03+08:00","trading_type":"spot"}

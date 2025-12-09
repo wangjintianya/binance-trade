@@ -1,8 +1,8 @@
 # Binance Auto-Trading System
 
-币安自动交易系统 - 使用Go语言开发的自动化加密货币交易应用程序
+币安自动交易系统 - 使用Go语言开发的自动化加密货币交易应用程序，支持现货和U本位合约交易
 
-An automated cryptocurrency trading application that integrates with the Binance exchange API to execute trades programmatically with built-in risk management and comprehensive logging.
+An automated cryptocurrency trading application that integrates with the Binance exchange API to execute spot and USDT-M futures trades programmatically with built-in risk management and comprehensive logging.
 
 ## 📋 目录 / Table of Contents
 
@@ -23,12 +23,32 @@ An automated cryptocurrency trading application that integrates with the Binance
 ## 功能特性 / Features
 
 ### 核心功能 / Core Features
+
+#### 现货交易 / Spot Trading
 - ✅ **安全的API集成** / **Secure API Integration** - HMAC SHA256 authentication with automatic request signing
 - 📊 **实时市场数据** / **Real-time Market Data** - Prices, K-lines, and account balances
 - 🤖 **自动化订单管理** / **Automated Order Management** - Market orders and limit orders
+- 🎯 **条件订单** / **Conditional Orders** - Trigger orders based on price, volume, or percentage changes
+- 🛑 **止损止盈** / **Stop Loss & Take Profit** - Automatic position protection with stop-loss and take-profit orders
+- 📈 **移动止损** / **Trailing Stop** - Dynamic stop-loss that adjusts with favorable price movements
+- 🔀 **复合触发条件** / **Composite Triggers** - Combine multiple conditions with AND/OR logic
 - 🛡️ **风险控制机制** / **Risk Control** - Order limits, balance protection, and rate limiting
+
+#### U本位合约交易 / USDT-M Futures Trading
+- 🚀 **合约交易支持** / **Futures Trading Support** - Full support for USDT-margined perpetual and delivery contracts
+- 📊 **合约市场数据** / **Futures Market Data** - Mark price, funding rate, and position information
+- ⚖️ **杠杆管理** / **Leverage Management** - Adjustable leverage from 1x to 125x
+- 💰 **保证金模式** / **Margin Modes** - Support for cross margin and isolated margin
+- 📍 **持仓管理** / **Position Management** - Real-time position tracking with PnL calculation
+- 🔄 **双向持仓** / **Hedge Mode** - Support for both one-way and hedge position modes
+- 💸 **资金费率处理** / **Funding Rate Management** - Automatic funding fee tracking and settlement
+- 🛡️ **合约风险控制** / **Futures Risk Control** - Liquidation monitoring, margin ratio alerts, and position limits
+- 🎯 **合约条件订单** / **Futures Conditional Orders** - Trigger based on mark price, PnL, or funding rate
+- 🛑 **合约止损止盈** / **Futures Stop Loss/Take Profit** - Advanced stop orders for futures positions
+
+#### 通用功能 / General Features
 - 📝 **完整的日志记录** / **Comprehensive Logging** - Structured logging with sensitive data masking
-- 💻 **交互式CLI** / **Interactive CLI** - User-friendly command-line interface
+- 💻 **双入口点系统** / **Dual Entry Points** - Separate commands for spot and futures trading
 - 🔄 **自动重试机制** / **Automatic Retry** - Exponential backoff for failed requests
 - ⚡ **速率限制管理** / **Rate Limit Management** - Automatic API rate limiting to prevent throttling
 
@@ -91,8 +111,25 @@ go build -o binance-trader.exe cmd/main.go
 
 ### 5. 运行 / Run
 
+**现货交易 / Spot Trading:**
 ```bash
-./binance-trader.exe
+./binance-trader.exe spot
+```
+
+**合约交易 / Futures Trading:**
+```bash
+# 设置合约API密钥（可与现货相同）/ Set futures API keys (can be same as spot)
+export BINANCE_FUTURES_API_KEY="your_futures_api_key_here"
+export BINANCE_FUTURES_API_SECRET="your_futures_api_secret_here"
+
+./binance-trader.exe futures
+```
+
+**同时运行现货和合约 / Run Both Spot and Futures:**
+```bash
+# 在不同终端窗口 / In different terminal windows
+./binance-trader.exe spot &
+./binance-trader.exe futures &
 ```
 
 ## 配置 / Configuration
@@ -104,22 +141,49 @@ go build -o binance-trader.exe cmd/main.go
 Create or edit `config.yaml` file (see `config.example.yaml` for reference):
 
 ```yaml
-binance:
+# 现货交易配置 / Spot Trading Configuration
+spot:
   api_key: ${BINANCE_API_KEY}        # 从环境变量读取 / Read from environment
   api_secret: ${BINANCE_API_SECRET}  # 从环境变量读取 / Read from environment
   base_url: https://api.binance.com  # 生产环境 / Production
-  # base_url: https://testnet.binance.vision  # 测试网 / Testnet
   testnet: false                     # 设为true使用测试网 / Set to true for testnet
 
-risk:
-  max_order_amount: 10000.0          # 单笔最大金额(USDT) / Max order amount (USDT)
-  max_daily_orders: 100              # 每日最大订单数 / Max daily orders
-  min_balance_reserve: 100.0         # 最小保留余额(USDT) / Min balance reserve (USDT)
-  max_api_calls_per_min: 1000        # 每分钟最大API调用 / Max API calls per minute
+  risk:
+    max_order_amount: 10000.0          # 单笔最大金额(USDT) / Max order amount (USDT)
+    max_daily_orders: 100              # 每日最大订单数 / Max daily orders
+    min_balance_reserve: 100.0         # 最小保留余额(USDT) / Min balance reserve (USDT)
+    max_api_calls_per_min: 1000        # 每分钟最大API调用 / Max API calls per minute
 
+# 合约交易配置 / Futures Trading Configuration
+futures:
+  api_key: ${BINANCE_FUTURES_API_KEY}        # 合约API密钥 / Futures API key
+  api_secret: ${BINANCE_FUTURES_API_SECRET}  # 合约API密钥 / Futures API secret
+  base_url: https://fapi.binance.com         # 合约API端点 / Futures API endpoint
+  testnet: false                             # 设为true使用测试网 / Set to true for testnet
+  
+  default_leverage: 10                       # 默认杠杆倍数 / Default leverage
+  default_margin_type: CROSSED               # 默认保证金模式: CROSSED/ISOLATED
+  dual_side_position: false                  # 双向持仓模式 / Hedge mode
+  
+  risk:
+    max_order_value: 50000.0                 # 单笔最大订单价值 / Max order value
+    max_position_value: 100000.0             # 最大持仓价值 / Max position value
+    max_leverage: 20                         # 最大杠杆倍数 / Max leverage
+    min_margin_ratio: 0.05                   # 最小保证金率 / Min margin ratio
+    liquidation_buffer: 0.02                 # 强平缓冲区 / Liquidation buffer
+    max_daily_orders: 200                    # 每日最大订单数 / Max daily orders
+    max_api_calls_per_min: 2000              # 每分钟最大API调用 / Max API calls per minute
+  
+  monitoring:
+    position_update_interval_ms: 5000        # 持仓更新间隔 / Position update interval
+    conditional_order_interval_ms: 1000      # 条件订单检查间隔 / Conditional order check interval
+    funding_rate_check_interval_ms: 60000    # 资金费率检查间隔 / Funding rate check interval
+
+# 共享配置 / Shared Configuration
 logging:
   level: info                        # 日志级别: debug, info, warn, error / Log level
-  file: logs/trading.log             # 日志文件路径 / Log file path
+  spot_file: logs/spot_trading.log   # 现货日志文件 / Spot log file
+  futures_file: logs/futures_trading.log  # 合约日志文件 / Futures log file
   max_size_mb: 100                   # 单个日志文件最大大小 / Max log file size
   max_backups: 5                     # 保留的日志文件数 / Number of log files to keep
 
@@ -133,10 +197,14 @@ retry:
 
 | 变量名 / Variable | 必需 / Required | 说明 / Description |
 |------------------|----------------|-------------------|
-| `BINANCE_API_KEY` | ✅ Yes | 币安API密钥 / Binance API key |
-| `BINANCE_API_SECRET` | ✅ Yes | 币安API密钥 / Binance API secret |
+| `BINANCE_API_KEY` | ✅ Yes (Spot) | 币安现货API密钥 / Binance spot API key |
+| `BINANCE_API_SECRET` | ✅ Yes (Spot) | 币安现货API密钥 / Binance spot API secret |
+| `BINANCE_FUTURES_API_KEY` | ✅ Yes (Futures) | 币安合约API密钥 / Binance futures API key |
+| `BINANCE_FUTURES_API_SECRET` | ✅ Yes (Futures) | 币安合约API密钥 / Binance futures API secret |
 | `CONFIG_FILE` | ❌ No | 配置文件路径 / Config file path (default: `config.yaml`) |
 | `LOG_LEVEL` | ❌ No | 日志级别 / Log level (default: `info`) |
+
+**注意 / Note:** 现货和合约可以使用相同的API密钥，但需要确保API密钥有相应的权限。/ Spot and futures can use the same API keys, but ensure the keys have appropriate permissions.
 
 ### 测试网配置 / Testnet Configuration
 
@@ -154,15 +222,27 @@ binance:
 
 ### 启动应用 / Starting the Application
 
+**现货交易 / Spot Trading:**
 ```bash
-./binance-trader.exe
+./binance-trader.exe spot
+```
+
+**合约交易 / Futures Trading:**
+```bash
+./binance-trader.exe futures
 ```
 
 应用启动后会显示欢迎界面和命令提示符 / After starting, you'll see a welcome screen and command prompt.
 
+### 快速入门指南 / Quick Start Guide
+
+详细的合约交易快速入门指南请参阅 / For detailed futures trading quick start guide, see: [docs/FUTURES_QUICKSTART.md](docs/FUTURES_QUICKSTART.md)
+
 ### 可用命令 / Available Commands
 
-#### 市场数据命令 / Market Data Commands
+#### 现货交易命令 / Spot Trading Commands
+
+##### 市场数据命令 / Market Data Commands
 
 | 命令 / Command | 说明 / Description | 示例 / Example |
 |---------------|-------------------|---------------|
@@ -180,6 +260,61 @@ binance:
 | `cancel <orderID>` | 取消订单 / Cancel order | `cancel 12345` |
 | `status <orderID>` | 查询订单状态 / Get order status | `status 12345` |
 | `orders` | 列出活跃订单 / List active orders | `orders` |
+
+#### 条件订单命令 / Conditional Order Commands
+
+| 命令 / Command | 说明 / Description | 示例 / Example |
+|---------------|-------------------|---------------|
+| `conditional-buy <symbol> <quantity> <trigger_price>` | 创建价格触发买单 / Create price-triggered buy order | `conditional-buy BTCUSDT 0.001 45000` |
+| `conditional-sell <symbol> <quantity> <trigger_price>` | 创建价格触发卖单 / Create price-triggered sell order | `conditional-sell BTCUSDT 0.001 50000` |
+| `conditional-orders` | 列出活跃条件订单 / List active conditional orders | `conditional-orders` |
+| `cancel-conditional <orderID>` | 取消条件订单 / Cancel conditional order | `cancel-conditional abc123` |
+
+#### 止损止盈命令 / Stop Loss & Take Profit Commands
+
+| 命令 / Command | 说明 / Description | 示例 / Example |
+|---------------|-------------------|---------------|
+| `stop-loss <symbol> <position> <stop_price>` | 设置止损 / Set stop loss | `stop-loss BTCUSDT 0.001 42000` |
+| `take-profit <symbol> <position> <target_price>` | 设置止盈 / Set take profit | `take-profit BTCUSDT 0.001 48000` |
+| `stop-loss-take-profit <symbol> <position> <stop> <target>` | 同时设置止损止盈 / Set both stop-loss and take-profit | `stop-loss-take-profit BTCUSDT 0.001 42000 48000` |
+| `trailing-stop <symbol> <position> <trail_percent>` | 设置移动止损 / Set trailing stop | `trailing-stop BTCUSDT 0.001 2.0` |
+| `stop-orders` | 列出活跃止损止盈订单 / List active stop orders | `stop-orders` |
+
+#### 合约交易命令 / Futures Trading Commands
+
+##### 合约市场数据 / Futures Market Data
+
+| 命令 / Command | 说明 / Description | 示例 / Example |
+|---------------|-------------------|---------------|
+| `mark-price <symbol>` | 获取标记价格 / Get mark price | `mark-price BTCUSDT` |
+| `funding-rate <symbol>` | 获取资金费率 / Get funding rate | `funding-rate BTCUSDT` |
+| `position <symbol>` | 查看持仓 / View position | `position BTCUSDT` |
+| `positions` | 查看所有持仓 / View all positions | `positions` |
+
+##### 合约交易 / Futures Trading
+
+| 命令 / Command | 说明 / Description | 示例 / Example |
+|---------------|-------------------|---------------|
+| `long <symbol> <quantity>` | 开多仓（市价）/ Open long position (market) | `long BTCUSDT 0.001` |
+| `short <symbol> <quantity>` | 开空仓（市价）/ Open short position (market) | `short BTCUSDT 0.001` |
+| `long-limit <symbol> <price> <quantity>` | 开多仓（限价）/ Open long position (limit) | `long-limit BTCUSDT 45000 0.001` |
+| `short-limit <symbol> <price> <quantity>` | 开空仓（限价）/ Open short position (limit) | `short-limit BTCUSDT 50000 0.001` |
+| `close-position <symbol>` | 平仓 / Close position | `close-position BTCUSDT` |
+
+##### 杠杆和保证金 / Leverage and Margin
+
+| 命令 / Command | 说明 / Description | 示例 / Example |
+|---------------|-------------------|---------------|
+| `leverage <symbol> <value>` | 设置杠杆 / Set leverage | `leverage BTCUSDT 10` |
+| `margin-type <symbol> <type>` | 设置保证金模式 / Set margin type | `margin-type BTCUSDT CROSSED` |
+| `position-mode <mode>` | 设置仓位模式 / Set position mode | `position-mode true` |
+
+##### 合约止损止盈 / Futures Stop Loss/Take Profit
+
+| 命令 / Command | 说明 / Description | 示例 / Example |
+|---------------|-------------------|---------------|
+| `futures-stop-loss <symbol> <side> <quantity> <price>` | 设置止损 / Set stop loss | `futures-stop-loss BTCUSDT LONG 0.001 42000` |
+| `futures-take-profit <symbol> <side> <quantity> <price>` | 设置止盈 / Set take profit | `futures-take-profit BTCUSDT LONG 0.001 48000` |
 
 #### 系统命令 / System Commands
 
@@ -326,6 +461,81 @@ No active orders
 Goodbye!
 ```
 
+## 高级功能 / Advanced Features
+
+### 条件订单 / Conditional Orders
+
+条件订单允许您设置在满足特定市场条件时自动执行的订单。
+
+Conditional orders allow you to set orders that execute automatically when specific market conditions are met.
+
+#### 支持的触发条件 / Supported Trigger Conditions
+
+1. **价格触发** / **Price Trigger** - 当价格达到指定水平时触发 / Triggers when price reaches specified level
+2. **涨跌幅触发** / **Percentage Change Trigger** - 当价格变化达到指定百分比时触发 / Triggers when price changes by specified percentage
+3. **成交量触发** / **Volume Trigger** - 当成交量达到指定阈值时触发 / Triggers when volume reaches specified threshold
+4. **复合条件** / **Composite Conditions** - 使用AND/OR逻辑组合多个条件 / Combine multiple conditions with AND/OR logic
+
+#### 使用示例 / Usage Example
+
+```bash
+# 当BTC价格达到45000时买入
+# Buy BTC when price reaches 45000
+> conditional-buy BTCUSDT 0.001 45000
+
+# 当BTC价格跌至42000时卖出
+# Sell BTC when price drops to 42000
+> conditional-sell BTCUSDT 0.001 42000
+
+# 查看活跃的条件订单
+# View active conditional orders
+> conditional-orders
+```
+
+### 止损止盈 / Stop Loss & Take Profit
+
+止损止盈功能帮助您自动保护利润和限制损失。
+
+Stop-loss and take-profit features help you automatically protect profits and limit losses.
+
+#### 功能特性 / Features
+
+1. **止损订单** / **Stop Loss** - 当价格向不利方向移动时自动平仓 / Automatically close position when price moves unfavorably
+2. **止盈订单** / **Take Profit** - 当价格达到目标利润时自动平仓 / Automatically close position when target profit is reached
+3. **配对订单** / **Paired Orders** - 同时设置止损和止盈，任一触发后取消另一个 / Set both stop-loss and take-profit, cancel one when other triggers
+4. **移动止损** / **Trailing Stop** - 随价格有利变动自动调整止损价格 / Automatically adjust stop price with favorable price movements
+
+#### 使用示例 / Usage Example
+
+```bash
+# 为持仓设置止损
+# Set stop loss for position
+> stop-loss BTCUSDT 0.001 42000
+
+# 为持仓设置止盈
+# Set take profit for position
+> take-profit BTCUSDT 0.001 48000
+
+# 同时设置止损和止盈
+# Set both stop-loss and take-profit
+> stop-loss-take-profit BTCUSDT 0.001 42000 48000
+
+# 设置2%的移动止损
+# Set 2% trailing stop
+> trailing-stop BTCUSDT 0.001 2.0
+```
+
+### 监控引擎 / Monitoring Engine
+
+系统包含后台监控引擎，持续监控市场数据并评估触发条件。
+
+The system includes a background monitoring engine that continuously monitors market data and evaluates trigger conditions.
+
+- 默认监控间隔：1秒 / Default monitoring interval: 1 second
+- 支持智能轮询优化 / Supports smart polling optimization
+- 自动执行触发的订单 / Automatically executes triggered orders
+- 完整的触发事件日志 / Complete trigger event logging
+
 ## API文档 / API Documentation
 
 详细的API文档请参阅 [API.md](docs/API.md)
@@ -339,6 +549,10 @@ For detailed API documentation, see [API.md](docs/API.md)
 - **RiskManager** - 风险管理接口 / Risk management interface
 - **MarketDataService** - 市场数据服务接口 / Market data service interface
 - **OrderRepository** - 订单仓储接口 / Order repository interface
+- **ConditionalOrderService** - 条件订单服务接口 / Conditional order service interface
+- **StopLossService** - 止损止盈服务接口 / Stop-loss service interface
+- **TriggerEngine** - 触发引擎接口 / Trigger engine interface
+- **MonitoringEngine** - 监控引擎接口 / Monitoring engine interface
 
 ## 测试 / Testing
 

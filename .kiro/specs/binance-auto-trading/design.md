@@ -33,6 +33,9 @@ graph TB
         TS[TradingService]
         RM[RiskManager]
         MDS[MarketDataService]
+        COS[ConditionalOrderService]
+        SLS[StopLossService]
+        TE[TriggerEngine]
     end
     
     subgraph "API客户端层"
@@ -43,6 +46,7 @@ graph TB
     
     subgraph "数据层"
         OR[OrderRepository]
+        COR[ConditionalOrderRepository]
         CM[ConfigManager]
         Log[Logger]
     end
@@ -55,6 +59,14 @@ graph TB
     TS --> RM
     TS --> OR
     MDS --> BC
+    COS --> TE
+    COS --> MDS
+    COS --> TS
+    COS --> COR
+    SLS --> TE
+    SLS --> MDS
+    SLS --> TS
+    TE --> MDS
     RM --> CM
     BC --> Auth
     BC --> RL
@@ -62,6 +74,8 @@ graph TB
     BC --> Log
     TS --> Log
     RM --> Log
+    COS --> Log
+    SLS --> Log
 ```
 
 ## 组件和接口
@@ -132,6 +146,64 @@ type MarketDataService interface {
     GetCurrentPrice(symbol string) (float64, error)
     GetHistoricalData(symbol string, interval string, limit int) ([]*Kline, error)
     SubscribeToPrice(symbol string, callback func(float64)) error
+    GetVolume(symbol string, timeWindow time.Duration) (float64, error)
+}
+```
+
+### 5. ConditionalOrderService
+
+条件订单服务，管理条件触发订单。
+
+```go
+type ConditionalOrderService interface {
+    // 创建条件订单
+    CreateConditionalOrder(order *ConditionalOrderRequest) (*ConditionalOrder, error)
+    
+    // 管理条件订单
+    CancelConditionalOrder(orderID string) error
+    UpdateConditionalOrder(orderID string, updates *ConditionalOrderUpdate) error
+    GetConditionalOrder(orderID string) (*ConditionalOrder, error)
+    GetActiveConditionalOrders() ([]*ConditionalOrder, error)
+    GetConditionalOrderHistory(startTime, endTime int64) ([]*ConditionalOrder, error)
+    
+    // 监控和触发
+    StartMonitoring() error
+    StopMonitoring() error
+}
+```
+
+### 6. StopLossService
+
+止损止盈服务，管理风险控制订单。
+
+```go
+type StopLossService interface {
+    // 设置止损止盈
+    SetStopLoss(symbol string, position float64, stopPrice float64) (*StopOrder, error)
+    SetTakeProfit(symbol string, position float64, targetPrice float64) (*StopOrder, error)
+    SetStopLossTakeProfit(symbol string, position float64, stopPrice, targetPrice float64) (*StopOrderPair, error)
+    SetTrailingStop(symbol string, position float64, trailPercent float64) (*TrailingStopOrder, error)
+    
+    // 管理止损止盈订单
+    CancelStopOrder(orderID string) error
+    GetActiveStopOrders(symbol string) ([]*StopOrder, error)
+    UpdateTrailingStop(orderID string, newTrailPercent float64) error
+}
+```
+
+### 7. TriggerEngine
+
+触发引擎，评估和执行触发条件。
+
+```go
+type TriggerEngine interface {
+    // 评估触发条件
+    EvaluateCondition(condition *TriggerCondition, marketData *MarketData) (bool, error)
+    EvaluateCompositeCondition(conditions []*TriggerCondition, operator LogicOperator, marketData *MarketData) (bool, error)
+    
+    // 注册和管理监控
+    RegisterCondition(orderID string, condition *TriggerCondition) error
+    UnregisterCondition(orderID string) error
 }
 ```
 
@@ -195,6 +267,139 @@ type RiskLimits struct {
     MaxDailyOrders    int      // 每日最大订单数
     MinBalanceReserve float64  // 最小保留余额
     MaxAPICallsPerMin int      // 每分钟最大API调用数
+}
+```
+
+### ConditionalOrderRequest
+```go
+type ConditionalOrderRequest struct {
+    Symbol          string              // 交易对
+    Side            OrderSide           // BUY 或 SELL
+    Type            OrderType           // MARKET 或 LIMIT
+    Quantity        float64             // 交易数量
+    Price           float64             // 价格（限价单）
+    TriggerCondition *TriggerCondition  // 触发条件
+    TimeWindow      *TimeWindow         // 时间窗口限制（可选）
+}
+```
+
+### ConditionalOrder
+```go
+type ConditionalOrder struct {
+    OrderID          string
+    Symbol           string
+    Side             OrderSide
+    Type             OrderType
+    Quantity         float64
+    Price            float64
+    TriggerCondition *TriggerCondition
+    Status           ConditionalOrderStatus  // PENDING, TRIGGERED, EXECUTED, CANCELLED
+    CreatedAt        int64
+    TriggeredAt      int64
+    ExecutedOrderID  int64
+    TimeWindow       *TimeWindow
+}
+```
+
+### TriggerCondition
+```go
+type TriggerCondition struct {
+    Type            TriggerType         // PRICE, PRICE_CHANGE_PERCENT, VOLUME
+    Operator        ComparisonOperator  // GREATER_THAN, LESS_THAN, GREATER_EQUAL, LESS_EQUAL
+    Value           float64             // 触发值
+    BasePrice       float64             // 基准价格（用于涨跌幅计算）
+    TimeWindow      time.Duration       // 时间窗口（用于成交量计算）
+    CompositeType   LogicOperator       // AND, OR（用于复合条件）
+    SubConditions   []*TriggerCondition // 子条件（用于复合条件）
+}
+
+type TriggerType int
+const (
+    TriggerTypePrice TriggerType = iota
+    TriggerTypePriceChangePercent
+    TriggerTypeVolume
+)
+
+type ComparisonOperator int
+const (
+    OperatorGreaterThan ComparisonOperator = iota
+    OperatorLessThan
+    OperatorGreaterEqual
+    OperatorLessEqual
+)
+
+type LogicOperator int
+const (
+    LogicAND LogicOperator = iota
+    LogicOR
+)
+```
+
+### StopOrder
+```go
+type StopOrder struct {
+    OrderID       string
+    Symbol        string
+    Position      float64             // 持仓数量
+    StopPrice     float64             // 止损价格
+    Type          StopOrderType       // STOP_LOSS, TAKE_PROFIT
+    Status        StopOrderStatus     // ACTIVE, TRIGGERED, CANCELLED
+    CreatedAt     int64
+    TriggeredAt   int64
+    ExecutedOrderID int64
+}
+
+type StopOrderType int
+const (
+    StopOrderTypeStopLoss StopOrderType = iota
+    StopOrderTypeTakeProfit
+)
+```
+
+### StopOrderPair
+```go
+type StopOrderPair struct {
+    PairID          string
+    Symbol          string
+    Position        float64
+    StopLossOrder   *StopOrder
+    TakeProfitOrder *StopOrder
+    Status          string  // ACTIVE, PARTIALLY_TRIGGERED, COMPLETED
+}
+```
+
+### TrailingStopOrder
+```go
+type TrailingStopOrder struct {
+    OrderID         string
+    Symbol          string
+    Position        float64
+    TrailPercent    float64  // 移动止损百分比
+    HighestPrice    float64  // 记录的最高价格
+    CurrentStopPrice float64 // 当前止损价格
+    Status          StopOrderStatus
+    CreatedAt       int64
+    LastUpdatedAt   int64
+}
+```
+
+### MarketData
+```go
+type MarketData struct {
+    Symbol        string
+    Price         float64
+    Volume24h     float64
+    Timestamp     int64
+    PriceChange   float64
+    PriceChangePercent float64
+}
+```
+
+### TimeWindow
+```go
+type TimeWindow struct {
+    StartTime time.Time
+    EndTime   time.Time
 }
 ```
 
@@ -299,6 +504,78 @@ type RiskLimits struct {
 *对于任何* 包含API密钥或密钥的日志条目，敏感信息必须被屏蔽（例如只显示前4位和后4位）
 **验证: 需求 6.5**
 
+### 属性 25: 价格触发条件监控
+*对于任何* 价格触发订单和价格序列，当价格满足触发条件时，系统必须识别该触发点
+**验证: 需求 8.1, 8.2**
+
+### 属性 26: 涨跌幅计算正确性
+*对于任何* 基准价格、当前价格和涨跌幅阈值，系统计算的涨跌幅必须等于 (当前价格 - 基准价格) / 基准价格 * 100，且当涨跌幅达到阈值时必须触发
+**验证: 需求 8.3**
+
+### 属性 27: 成交量累计触发
+*对于任何* 成交量数据序列和阈值，当指定时间窗口内的累计成交量达到或超过阈值时，系统必须触发订单
+**验证: 需求 8.4**
+
+### 属性 28: 触发事件日志完整性
+*对于任何* 触发的条件订单，日志记录必须包含触发时间、触发价格和订单ID
+**验证: 需求 8.5**
+
+### 属性 29: 止损触发正确性
+*对于任何* 持仓和止损价格，当市场价格跌破（对于多头）或突破（对于空头）止损价格时，系统必须执行平仓操作
+**验证: 需求 9.1**
+
+### 属性 30: 止盈触发正确性
+*对于任何* 持仓和止盈价格，当市场价格达到或超过止盈价格时，系统必须执行平仓操作
+**验证: 需求 9.2**
+
+### 属性 31: 止损止盈互斥性
+*对于任何* 止损止盈配对订单，当其中一个订单被触发后，另一个订单的状态必须变为已取消
+**验证: 需求 9.3**
+
+### 属性 32: 止损止盈触发日志
+*对于任何* 触发的止损或止盈订单，日志必须包含触发原因、触发价格和执行结果
+**验证: 需求 9.4**
+
+### 属性 33: 移动止损价格调整
+*对于任何* 移动止损订单和价格序列，当价格创新高时，止损价格必须按照设定的百分比跟随调整
+**验证: 需求 9.5**
+
+### 属性 34: 活跃条件订单过滤
+*对于任何* 条件订单集合，查询活跃订单的函数必须只返回状态为PENDING的订单
+**验证: 需求 10.1**
+
+### 属性 35: 条件订单取消效果
+*对于任何* 条件订单，取消操作后该订单不应出现在活跃订单列表中
+**验证: 需求 10.2**
+
+### 属性 36: 条件订单更新一致性
+*对于任何* 条件订单，更新操作后查询该订单应返回更新后的参数
+**验证: 需求 10.3**
+
+### 属性 37: 条件订单状态转换
+*对于任何* 条件订单，当触发条件满足并执行后，订单状态必须从PENDING变为EXECUTED
+**验证: 需求 10.4**
+
+### 属性 38: 历史订单查询过滤
+*对于任何* 条件订单集合，历史查询必须只返回状态为EXECUTED或CANCELLED的订单
+**验证: 需求 10.5**
+
+### 属性 39: AND复合条件逻辑
+*对于任何* AND组合的多个触发条件和市场数据，只有当所有子条件都满足时，复合条件才应评估为真
+**验证: 需求 11.1**
+
+### 属性 40: OR复合条件逻辑
+*对于任何* OR组合的多个触发条件和市场数据，当任一子条件满足时，复合条件应评估为真
+**验证: 需求 11.2**
+
+### 属性 41: 时间窗口过滤
+*对于任何* 带时间窗口限制的条件订单，当当前时间不在指定时间范围内时，触发条件不应被评估
+**验证: 需求 11.3**
+
+### 属性 42: 复合条件触发日志
+*对于任何* 触发的复合条件订单，日志必须包含所有满足的子条件及其对应的触发值
+**验证: 需求 11.5**
+
 ## 错误处理
 
 ### API错误处理
@@ -319,6 +596,11 @@ const (
     ErrInvalidParameter
     ErrOrderNotFound
     ErrRiskLimitExceeded
+    ErrInvalidTriggerCondition
+    ErrConditionalOrderNotFound
+    ErrStopOrderNotFound
+    ErrOrderAlreadyTriggered
+    ErrTimeWindowExpired
 )
 
 type TradingError struct {
@@ -339,6 +621,9 @@ type TradingError struct {
 - 订单创建失败: 回滚本地状态，释放预留资金
 - 订单取消失败: 标记订单为"取消待确认"，稍后重试
 - 数据同步失败: 使用缓存数据，后台继续尝试同步
+- 条件订单触发失败: 记录失败原因，保留条件订单以便重试
+- 止损止盈执行失败: 立即重试最多3次，记录所有尝试
+- 市场数据获取失败: 使用最近的缓存数据，继续监控其他订单
 
 ## 测试策略
 
@@ -349,6 +634,10 @@ type TradingError struct {
 - **业务逻辑测试**: 测试订单创建、取消和查询逻辑
 - **风险管理测试**: 测试各种风险控制规则
 - **数据模型测试**: 测试数据序列化和反序列化
+- **触发引擎测试**: 测试各种触发条件的评估逻辑
+- **条件订单服务测试**: 测试条件订单的创建、更新和取消
+- **止损止盈服务测试**: 测试止损止盈订单的设置和触发
+- **复合条件测试**: 测试AND/OR逻辑组合的正确性
 
 ### 属性测试
 使用`gopter`库（Go的属性测试框架）进行属性测试：
@@ -362,6 +651,8 @@ type TradingError struct {
 ### 集成测试
 - 使用币安测试网进行集成测试
 - 测试完整的交易流程：连接 -> 查询 -> 下单 -> 查询状态 -> 取消
+- 测试条件订单流程：创建条件订单 -> 监控触发 -> 执行订单 -> 验证结果
+- 测试止损止盈流程：设置止损止盈 -> 模拟价格变动 -> 验证触发和执行
 - 验证错误处理和重试机制
 
 ### 测试覆盖率目标
@@ -391,6 +682,40 @@ type TradingError struct {
 - 验证API响应数据的完整性
 - 使用类型安全的数据结构
 
+## 条件订单监控机制
+
+### 监控架构
+条件订单服务使用后台goroutine持续监控市场数据并评估触发条件：
+
+```go
+type MonitoringEngine struct {
+    activeOrders    map[string]*ConditionalOrder
+    marketDataCache *MarketDataCache
+    triggerEngine   TriggerEngine
+    updateInterval  time.Duration
+    stopChan        chan struct{}
+}
+```
+
+### 监控流程
+1. **初始化**: 启动时加载所有活跃的条件订单
+2. **数据获取**: 定期从MarketDataService获取最新市场数据（默认每秒）
+3. **条件评估**: 对每个活跃订单，使用TriggerEngine评估其触发条件
+4. **订单执行**: 当条件满足时，调用TradingService执行订单
+5. **状态更新**: 更新订单状态并记录执行结果
+6. **清理**: 移除已触发或已取消的订单
+
+### 并发控制
+- 使用读写锁保护活跃订单映射
+- 每个订单的评估和执行在独立的goroutine中进行
+- 使用channel协调监控引擎的启动和停止
+
+### 性能优化
+- 批量获取市场数据减少API调用
+- 使用本地缓存避免重复查询
+- 对于相同交易对的订单，共享市场数据
+- 实现智能轮询：根据触发条件的接近程度调整检查频率
+
 ## 性能考虑
 
 ### 并发处理
@@ -402,6 +727,8 @@ type TradingError struct {
 - 缓存市场数据（价格、K线）减少API调用
 - 设置合理的缓存过期时间（例如价格缓存1秒）
 - 使用内存缓存提高响应速度
+- 条件订单监控使用共享缓存避免重复API调用
+- 实现LRU缓存策略管理历史K线数据
 
 ### 资源管理
 - 及时关闭HTTP连接
@@ -436,6 +763,18 @@ retry:
   max_attempts: 3
   initial_delay_ms: 1000
   backoff_multiplier: 2.0
+
+conditional_orders:
+  monitoring_interval_ms: 1000
+  max_active_orders: 500
+  trigger_execution_timeout_ms: 3000
+  enable_smart_polling: true
+
+stop_loss:
+  default_trail_percent: 2.0
+  min_trail_percent: 0.1
+  max_trail_percent: 10.0
+  update_interval_ms: 500
 ```
 
 ### 环境变量

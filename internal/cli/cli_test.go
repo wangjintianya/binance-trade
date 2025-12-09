@@ -4,14 +4,17 @@ import (
 	"bytes"
 	"strings"
 	"testing"
+	"time"
 
 	"binance-trader/internal/api"
+	"binance-trader/internal/repository"
 	"binance-trader/internal/service"
 )
 
 // mockTradingService is a mock implementation of TradingService
 type mockTradingService struct {
 	placeMarketBuyOrderFunc  func(symbol string, quantity float64) (*api.Order, error)
+	placeMarketSellOrderFunc func(symbol string, quantity float64) (*api.Order, error)
 	placeLimitSellOrderFunc  func(symbol string, price, quantity float64) (*api.Order, error)
 	cancelOrderFunc          func(orderID int64) error
 	getOrderStatusFunc       func(orderID int64) (*service.OrderStatus, error)
@@ -21,6 +24,13 @@ type mockTradingService struct {
 func (m *mockTradingService) PlaceMarketBuyOrder(symbol string, quantity float64) (*api.Order, error) {
 	if m.placeMarketBuyOrderFunc != nil {
 		return m.placeMarketBuyOrderFunc(symbol, quantity)
+	}
+	return nil, nil
+}
+
+func (m *mockTradingService) PlaceMarketSellOrder(symbol string, quantity float64) (*api.Order, error) {
+	if m.placeMarketSellOrderFunc != nil {
+		return m.placeMarketSellOrderFunc(symbol, quantity)
 	}
 	return nil, nil
 }
@@ -58,6 +68,7 @@ type mockMarketDataService struct {
 	getCurrentPriceFunc     func(symbol string) (float64, error)
 	getHistoricalDataFunc   func(symbol string, interval string, limit int) ([]*api.Kline, error)
 	subscribeToPriceFunc    func(symbol string, callback func(float64)) error
+	getVolumeFunc           func(symbol string, timeWindow time.Duration) (float64, error)
 }
 
 func (m *mockMarketDataService) GetCurrentPrice(symbol string) (float64, error) {
@@ -81,6 +92,13 @@ func (m *mockMarketDataService) SubscribeToPrice(symbol string, callback func(fl
 	return nil
 }
 
+func (m *mockMarketDataService) GetVolume(symbol string, timeWindow time.Duration) (float64, error) {
+	if m.getVolumeFunc != nil {
+		return m.getVolumeFunc(symbol, timeWindow)
+	}
+	return 0, nil
+}
+
 // mockLogger is a mock implementation of Logger
 type mockLogger struct{}
 
@@ -92,6 +110,11 @@ func (m *mockLogger) Fatal(msg string, fields map[string]interface{})           
 func (m *mockLogger) LogAPIOperation(operation string, result string, fields map[string]interface{}) {}
 func (m *mockLogger) LogOrderEvent(event string, orderID int64, symbol, side, orderType string, quantity float64, fields map[string]interface{}) {}
 func (m *mockLogger) LogError(err error, fields map[string]interface{})                    {}
+func (m *mockLogger) LogFuturesAPIOperation(operationType string, result string, fields map[string]interface{}) {}
+func (m *mockLogger) LogFuturesOrderEvent(eventType string, orderID int64, symbol, side, orderType string, quantity float64, positionChange map[string]interface{}, fields map[string]interface{}) {}
+func (m *mockLogger) LogLiquidationEvent(symbol string, positionSide string, liquidationPrice float64, lossAmount float64, reason string, fields map[string]interface{}) {}
+func (m *mockLogger) LogFundingRateSettlement(symbol string, fundingFee float64, fundingRate float64, positionSize float64, fields map[string]interface{}) {}
+func (m *mockLogger) SetTradingType(tradingType string)                                    {}
 
 // TestParseCommand tests command parsing
 func TestParseCommand(t *testing.T) {
@@ -189,7 +212,7 @@ func TestFormatPrice(t *testing.T) {
 	mockMarket := &mockMarketDataService{}
 	mockLog := &mockLogger{}
 	
-	cli := NewCLI(mockTrading, mockMarket, mockLog)
+	cli := NewCLI(mockTrading, mockMarket, &mockConditionalOrderService{}, &mockStopLossService{}, mockLog)
 	
 	var buf bytes.Buffer
 	cli.writer = &buf
@@ -213,7 +236,7 @@ func TestFormatOrder(t *testing.T) {
 	mockMarket := &mockMarketDataService{}
 	mockLog := &mockLogger{}
 	
-	cli := NewCLI(mockTrading, mockMarket, mockLog)
+	cli := NewCLI(mockTrading, mockMarket, &mockConditionalOrderService{}, &mockStopLossService{}, mockLog)
 	
 	var buf bytes.Buffer
 	cli.writer = &buf
@@ -258,7 +281,7 @@ func TestFormatOrderStatus(t *testing.T) {
 	mockMarket := &mockMarketDataService{}
 	mockLog := &mockLogger{}
 	
-	cli := NewCLI(mockTrading, mockMarket, mockLog)
+	cli := NewCLI(mockTrading, mockMarket, &mockConditionalOrderService{}, &mockStopLossService{}, mockLog)
 	
 	var buf bytes.Buffer
 	cli.writer = &buf
@@ -296,7 +319,7 @@ func TestFormatOrderList(t *testing.T) {
 	mockMarket := &mockMarketDataService{}
 	mockLog := &mockLogger{}
 	
-	cli := NewCLI(mockTrading, mockMarket, mockLog)
+	cli := NewCLI(mockTrading, mockMarket, &mockConditionalOrderService{}, &mockStopLossService{}, mockLog)
 	
 	t.Run("empty list", func(t *testing.T) {
 		var buf bytes.Buffer
@@ -359,7 +382,7 @@ func TestFormatKlines(t *testing.T) {
 	mockMarket := &mockMarketDataService{}
 	mockLog := &mockLogger{}
 	
-	cli := NewCLI(mockTrading, mockMarket, mockLog)
+	cli := NewCLI(mockTrading, mockMarket, &mockConditionalOrderService{}, &mockStopLossService{}, mockLog)
 	
 	t.Run("empty klines", func(t *testing.T) {
 		var buf bytes.Buffer
@@ -420,7 +443,7 @@ func TestHandlePrice(t *testing.T) {
 			},
 		}
 		
-		cli := NewCLI(&mockTradingService{}, mockMarket, &mockLogger{})
+		cli := NewCLI(&mockTradingService{}, mockMarket, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		var buf bytes.Buffer
 		cli.writer = &buf
@@ -437,7 +460,7 @@ func TestHandlePrice(t *testing.T) {
 	})
 	
 	t.Run("missing argument", func(t *testing.T) {
-		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		err := cli.handlePrice([]string{})
 		if err == nil {
@@ -462,7 +485,7 @@ func TestHandleBuy(t *testing.T) {
 			},
 		}
 		
-		cli := NewCLI(mockTrading, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(mockTrading, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		var buf bytes.Buffer
 		cli.writer = &buf
@@ -479,7 +502,7 @@ func TestHandleBuy(t *testing.T) {
 	})
 	
 	t.Run("missing arguments", func(t *testing.T) {
-		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		err := cli.handleBuy([]string{"BTCUSDT"})
 		if err == nil {
@@ -488,7 +511,7 @@ func TestHandleBuy(t *testing.T) {
 	})
 	
 	t.Run("invalid quantity", func(t *testing.T) {
-		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		err := cli.handleBuy([]string{"BTCUSDT", "invalid"})
 		if err == nil {
@@ -514,7 +537,7 @@ func TestHandleSell(t *testing.T) {
 			},
 		}
 		
-		cli := NewCLI(mockTrading, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(mockTrading, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		var buf bytes.Buffer
 		cli.writer = &buf
@@ -531,7 +554,7 @@ func TestHandleSell(t *testing.T) {
 	})
 	
 	t.Run("missing arguments", func(t *testing.T) {
-		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		err := cli.handleSell([]string{"BTCUSDT", "50000"})
 		if err == nil {
@@ -549,7 +572,7 @@ func TestHandleCancel(t *testing.T) {
 			},
 		}
 		
-		cli := NewCLI(mockTrading, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(mockTrading, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		var buf bytes.Buffer
 		cli.writer = &buf
@@ -566,11 +589,561 @@ func TestHandleCancel(t *testing.T) {
 	})
 	
 	t.Run("invalid order ID", func(t *testing.T) {
-		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockLogger{})
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
 		
 		err := cli.handleCancel([]string{"invalid"})
 		if err == nil {
 			t.Errorf("handleCancel() expected error for invalid order ID")
 		}
 	})
+}
+
+// mockConditionalOrderService is a mock implementation of ConditionalOrderService
+type mockConditionalOrderService struct {
+	createConditionalOrderFunc       func(request *repository.ConditionalOrderRequest) (*repository.ConditionalOrder, error)
+	cancelConditionalOrderFunc       func(orderID string) error
+	getActiveConditionalOrdersFunc   func() ([]*repository.ConditionalOrder, error)
+}
+
+func (m *mockConditionalOrderService) CreateConditionalOrder(request *repository.ConditionalOrderRequest) (*repository.ConditionalOrder, error) {
+	if m.createConditionalOrderFunc != nil {
+		return m.createConditionalOrderFunc(request)
+	}
+	return nil, nil
+}
+
+func (m *mockConditionalOrderService) CancelConditionalOrder(orderID string) error {
+	if m.cancelConditionalOrderFunc != nil {
+		return m.cancelConditionalOrderFunc(orderID)
+	}
+	return nil
+}
+
+func (m *mockConditionalOrderService) UpdateConditionalOrder(orderID string, updates *service.ConditionalOrderUpdate) error {
+	return nil
+}
+
+func (m *mockConditionalOrderService) GetConditionalOrder(orderID string) (*repository.ConditionalOrder, error) {
+	return nil, nil
+}
+
+func (m *mockConditionalOrderService) GetActiveConditionalOrders() ([]*repository.ConditionalOrder, error) {
+	if m.getActiveConditionalOrdersFunc != nil {
+		return m.getActiveConditionalOrdersFunc()
+	}
+	return nil, nil
+}
+
+func (m *mockConditionalOrderService) GetConditionalOrderHistory(startTime, endTime int64) ([]*repository.ConditionalOrder, error) {
+	return nil, nil
+}
+
+func (m *mockConditionalOrderService) StartMonitoring() error {
+	return nil
+}
+
+func (m *mockConditionalOrderService) StopMonitoring() error {
+	return nil
+}
+
+// mockStopLossService is a mock implementation of StopLossService
+type mockStopLossService struct {
+	setStopLossFunc         func(symbol string, position float64, stopPrice float64) (*repository.StopOrder, error)
+	setTakeProfitFunc       func(symbol string, position float64, targetPrice float64) (*repository.StopOrder, error)
+	cancelStopOrderFunc     func(orderID string) error
+	getActiveStopOrdersFunc func(symbol string) ([]*repository.StopOrder, error)
+}
+
+func (m *mockStopLossService) SetStopLoss(symbol string, position float64, stopPrice float64) (*repository.StopOrder, error) {
+	if m.setStopLossFunc != nil {
+		return m.setStopLossFunc(symbol, position, stopPrice)
+	}
+	return nil, nil
+}
+
+func (m *mockStopLossService) SetTakeProfit(symbol string, position float64, targetPrice float64) (*repository.StopOrder, error) {
+	if m.setTakeProfitFunc != nil {
+		return m.setTakeProfitFunc(symbol, position, targetPrice)
+	}
+	return nil, nil
+}
+
+func (m *mockStopLossService) SetStopLossTakeProfit(symbol string, position float64, stopPrice, targetPrice float64) (*repository.StopOrderPair, error) {
+	return nil, nil
+}
+
+func (m *mockStopLossService) SetTrailingStop(symbol string, position float64, trailPercent float64) (*repository.TrailingStopOrder, error) {
+	return nil, nil
+}
+
+func (m *mockStopLossService) CancelStopOrder(orderID string) error {
+	if m.cancelStopOrderFunc != nil {
+		return m.cancelStopOrderFunc(orderID)
+	}
+	return nil
+}
+
+func (m *mockStopLossService) GetActiveStopOrders(symbol string) ([]*repository.StopOrder, error) {
+	if m.getActiveStopOrdersFunc != nil {
+		return m.getActiveStopOrdersFunc(symbol)
+	}
+	return nil, nil
+}
+
+func (m *mockStopLossService) UpdateTrailingStop(orderID string, newTrailPercent float64) error {
+	return nil
+}
+
+// TestHandleConditionalOrder tests the condorder command handler
+func TestHandleConditionalOrder(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		mockCondService := &mockConditionalOrderService{
+			createConditionalOrderFunc: func(request *repository.ConditionalOrderRequest) (*repository.ConditionalOrder, error) {
+				return &repository.ConditionalOrder{
+					OrderID:  "cond-12345",
+					Symbol:   request.Symbol,
+					Side:     request.Side,
+					Type:     request.Type,
+					Quantity: request.Quantity,
+					Status:   repository.ConditionalOrderStatusPending,
+					TriggerCondition: request.TriggerCondition,
+				}, nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, mockCondService, &mockStopLossService{}, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleConditionalOrder([]string{"BTCUSDT", "BUY", "0.001", "PRICE", ">=", "50000"})
+		if err != nil {
+			t.Errorf("handleConditionalOrder() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "cond-12345") {
+			t.Errorf("handleConditionalOrder() output should contain order ID")
+		}
+	})
+
+	t.Run("missing arguments", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleConditionalOrder([]string{"BTCUSDT", "BUY"})
+		if err == nil {
+			t.Errorf("handleConditionalOrder() expected error for missing arguments")
+		}
+	})
+
+	t.Run("invalid quantity", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleConditionalOrder([]string{"BTCUSDT", "BUY", "invalid", "PRICE", ">=", "50000"})
+		if err == nil {
+			t.Errorf("handleConditionalOrder() expected error for invalid quantity")
+		}
+	})
+
+	t.Run("invalid trigger value", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleConditionalOrder([]string{"BTCUSDT", "BUY", "0.001", "PRICE", ">=", "invalid"})
+		if err == nil {
+			t.Errorf("handleConditionalOrder() expected error for invalid trigger value")
+		}
+	})
+}
+
+// TestHandleConditionalOrders tests the condorders command handler
+func TestHandleConditionalOrders(t *testing.T) {
+	t.Run("success with orders", func(t *testing.T) {
+		mockCondService := &mockConditionalOrderService{
+			getActiveConditionalOrdersFunc: func() ([]*repository.ConditionalOrder, error) {
+				return []*repository.ConditionalOrder{
+					{
+						OrderID:  "cond-1",
+						Symbol:   "BTCUSDT",
+						Side:     api.OrderSideBuy,
+						Type:     api.OrderTypeMarket,
+						Quantity: 0.001,
+						Status:   repository.ConditionalOrderStatusPending,
+						TriggerCondition: &repository.TriggerCondition{
+							Type:     repository.TriggerTypePrice,
+							Operator: repository.OperatorGreaterEqual,
+							Value:    50000,
+						},
+					},
+				}, nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, mockCondService, &mockStopLossService{}, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleConditionalOrders([]string{})
+		if err != nil {
+			t.Errorf("handleConditionalOrders() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "cond-1") {
+			t.Errorf("handleConditionalOrders() output should contain order ID")
+		}
+		if !strings.Contains(output, "BTCUSDT") {
+			t.Errorf("handleConditionalOrders() output should contain symbol")
+		}
+	})
+
+	t.Run("empty list", func(t *testing.T) {
+		mockCondService := &mockConditionalOrderService{
+			getActiveConditionalOrdersFunc: func() ([]*repository.ConditionalOrder, error) {
+				return []*repository.ConditionalOrder{}, nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, mockCondService, &mockStopLossService{}, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleConditionalOrders([]string{})
+		if err != nil {
+			t.Errorf("handleConditionalOrders() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "No active conditional orders") {
+			t.Errorf("handleConditionalOrders() should show 'No active conditional orders' for empty list")
+		}
+	})
+}
+
+// TestHandleCancelConditionalOrder tests the cancelcond command handler
+func TestHandleCancelConditionalOrder(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		mockCondService := &mockConditionalOrderService{
+			cancelConditionalOrderFunc: func(orderID string) error {
+				return nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, mockCondService, &mockStopLossService{}, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleCancelConditionalOrder([]string{"cond-12345"})
+		if err != nil {
+			t.Errorf("handleCancelConditionalOrder() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "canceled successfully") {
+			t.Errorf("handleCancelConditionalOrder() output should contain success message")
+		}
+	})
+
+	t.Run("missing argument", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleCancelConditionalOrder([]string{})
+		if err == nil {
+			t.Errorf("handleCancelConditionalOrder() expected error for missing argument")
+		}
+	})
+}
+
+// TestHandleStopLoss tests the stoploss command handler
+func TestHandleStopLoss(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		mockStopService := &mockStopLossService{
+			setStopLossFunc: func(symbol string, position float64, stopPrice float64) (*repository.StopOrder, error) {
+				return &repository.StopOrder{
+					OrderID:   "sl-12345",
+					Symbol:    symbol,
+					Position:  position,
+					StopPrice: stopPrice,
+					Type:      repository.StopOrderTypeStopLoss,
+					Status:    repository.StopOrderStatusActive,
+				}, nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, mockStopService, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleStopLoss([]string{"BTCUSDT", "0.001", "49000"})
+		if err != nil {
+			t.Errorf("handleStopLoss() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "sl-12345") {
+			t.Errorf("handleStopLoss() output should contain order ID")
+		}
+		if !strings.Contains(output, "STOP_LOSS") {
+			t.Errorf("handleStopLoss() output should contain order type")
+		}
+	})
+
+	t.Run("missing arguments", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleStopLoss([]string{"BTCUSDT"})
+		if err == nil {
+			t.Errorf("handleStopLoss() expected error for missing arguments")
+		}
+	})
+
+	t.Run("invalid position", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleStopLoss([]string{"BTCUSDT", "invalid", "49000"})
+		if err == nil {
+			t.Errorf("handleStopLoss() expected error for invalid position")
+		}
+	})
+}
+
+// TestHandleTakeProfit tests the takeprofit command handler
+func TestHandleTakeProfit(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		mockStopService := &mockStopLossService{
+			setTakeProfitFunc: func(symbol string, position float64, targetPrice float64) (*repository.StopOrder, error) {
+				return &repository.StopOrder{
+					OrderID:   "tp-12345",
+					Symbol:    symbol,
+					Position:  position,
+					StopPrice: targetPrice,
+					Type:      repository.StopOrderTypeTakeProfit,
+					Status:    repository.StopOrderStatusActive,
+				}, nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, mockStopService, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleTakeProfit([]string{"BTCUSDT", "0.001", "51000"})
+		if err != nil {
+			t.Errorf("handleTakeProfit() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "tp-12345") {
+			t.Errorf("handleTakeProfit() output should contain order ID")
+		}
+		if !strings.Contains(output, "TAKE_PROFIT") {
+			t.Errorf("handleTakeProfit() output should contain order type")
+		}
+	})
+
+	t.Run("missing arguments", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleTakeProfit([]string{"BTCUSDT", "0.001"})
+		if err == nil {
+			t.Errorf("handleTakeProfit() expected error for missing arguments")
+		}
+	})
+}
+
+// TestHandleStopOrders tests the stoporders command handler
+func TestHandleStopOrders(t *testing.T) {
+	t.Run("success with orders", func(t *testing.T) {
+		mockStopService := &mockStopLossService{
+			getActiveStopOrdersFunc: func(symbol string) ([]*repository.StopOrder, error) {
+				return []*repository.StopOrder{
+					{
+						OrderID:   "sl-1",
+						Symbol:    symbol,
+						Position:  0.001,
+						StopPrice: 49000,
+						Type:      repository.StopOrderTypeStopLoss,
+						Status:    repository.StopOrderStatusActive,
+					},
+					{
+						OrderID:   "tp-1",
+						Symbol:    symbol,
+						Position:  0.001,
+						StopPrice: 51000,
+						Type:      repository.StopOrderTypeTakeProfit,
+						Status:    repository.StopOrderStatusActive,
+					},
+				}, nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, mockStopService, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleStopOrders([]string{"BTCUSDT"})
+		if err != nil {
+			t.Errorf("handleStopOrders() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "sl-1") {
+			t.Errorf("handleStopOrders() output should contain stop loss order ID")
+		}
+		if !strings.Contains(output, "tp-1") {
+			t.Errorf("handleStopOrders() output should contain take profit order ID")
+		}
+	})
+
+	t.Run("empty list", func(t *testing.T) {
+		mockStopService := &mockStopLossService{
+			getActiveStopOrdersFunc: func(symbol string) ([]*repository.StopOrder, error) {
+				return []*repository.StopOrder{}, nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, mockStopService, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleStopOrders([]string{"BTCUSDT"})
+		if err != nil {
+			t.Errorf("handleStopOrders() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "No active stop orders") {
+			t.Errorf("handleStopOrders() should show 'No active stop orders' for empty list")
+		}
+	})
+
+	t.Run("missing argument", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleStopOrders([]string{})
+		if err == nil {
+			t.Errorf("handleStopOrders() expected error for missing argument")
+		}
+	})
+}
+
+// TestHandleCancelStopOrder tests the cancelstop command handler
+func TestHandleCancelStopOrder(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		mockStopService := &mockStopLossService{
+			cancelStopOrderFunc: func(orderID string) error {
+				return nil
+			},
+		}
+
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, mockStopService, &mockLogger{})
+
+		var buf bytes.Buffer
+		cli.writer = &buf
+
+		err := cli.handleCancelStopOrder([]string{"sl-12345"})
+		if err != nil {
+			t.Errorf("handleCancelStopOrder() unexpected error: %v", err)
+		}
+
+		output := buf.String()
+		if !strings.Contains(output, "canceled successfully") {
+			t.Errorf("handleCancelStopOrder() output should contain success message")
+		}
+	})
+
+	t.Run("missing argument", func(t *testing.T) {
+		cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+		err := cli.handleCancelStopOrder([]string{})
+		if err == nil {
+			t.Errorf("handleCancelStopOrder() expected error for missing argument")
+		}
+	})
+}
+
+// TestFormatConditionalOrder tests conditional order formatting
+func TestFormatConditionalOrder(t *testing.T) {
+	cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+	var buf bytes.Buffer
+	cli.writer = &buf
+
+	order := &repository.ConditionalOrder{
+		OrderID:  "cond-12345",
+		Symbol:   "BTCUSDT",
+		Side:     api.OrderSideBuy,
+		Type:     api.OrderTypeMarket,
+		Quantity: 0.001,
+		Status:   repository.ConditionalOrderStatusPending,
+		TriggerCondition: &repository.TriggerCondition{
+			Type:     repository.TriggerTypePrice,
+			Operator: repository.OperatorGreaterEqual,
+			Value:    50000,
+		},
+	}
+
+	cli.formatConditionalOrder(order)
+
+	output := buf.String()
+
+	expectedFields := []string{
+		"cond-12345",
+		"BTCUSDT",
+		"BUY",
+		"MARKET",
+		"0.001",
+		"PENDING",
+		"PRICE",
+		">=",
+		"50000",
+	}
+
+	for _, field := range expectedFields {
+		if !strings.Contains(output, field) {
+			t.Errorf("formatConditionalOrder() output should contain %s", field)
+		}
+	}
+}
+
+// TestFormatStopOrder tests stop order formatting
+func TestFormatStopOrder(t *testing.T) {
+	cli := NewCLI(&mockTradingService{}, &mockMarketDataService{}, &mockConditionalOrderService{}, &mockStopLossService{}, &mockLogger{})
+
+	var buf bytes.Buffer
+	cli.writer = &buf
+
+	order := &repository.StopOrder{
+		OrderID:   "sl-12345",
+		Symbol:    "BTCUSDT",
+		Position:  0.001,
+		StopPrice: 49000,
+		Type:      repository.StopOrderTypeStopLoss,
+		Status:    repository.StopOrderStatusActive,
+	}
+
+	cli.formatStopOrder(order)
+
+	output := buf.String()
+
+	expectedFields := []string{
+		"sl-12345",
+		"BTCUSDT",
+		"STOP_LOSS",
+		"0.001",
+		"49000",
+		"ACTIVE",
+	}
+
+	for _, field := range expectedFields {
+		if !strings.Contains(output, field) {
+			t.Errorf("formatStopOrder() output should contain %s", field)
+		}
+	}
 }

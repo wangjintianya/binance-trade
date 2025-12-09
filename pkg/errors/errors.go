@@ -13,6 +13,20 @@ const (
 	ErrInvalidParameter
 	ErrOrderNotFound
 	ErrRiskLimitExceeded
+	ErrInvalidTriggerCondition
+	ErrConditionalOrderNotFound
+	ErrStopOrderNotFound
+	ErrOrderAlreadyTriggered
+	ErrTimeWindowExpired
+	// Futures-specific errors
+	ErrInsufficientMargin
+	ErrInvalidLeverage
+	ErrPositionModeConflict
+	ErrMarginModeConflict
+	ErrLiquidationRisk
+	ErrMaxPositionExceeded
+	ErrReduceOnlyViolation
+	ErrPositionNotFound
 )
 
 // TradingError represents a trading system error

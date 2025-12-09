@@ -12,6 +12,7 @@ type MarketDataService interface {
 	GetCurrentPrice(symbol string) (float64, error)
 	GetHistoricalData(symbol string, interval string, limit int) ([]*api.Kline, error)
 	SubscribeToPrice(symbol string, callback func(float64)) error
+	GetVolume(symbol string, timeWindow time.Duration) (float64, error)
 }
 
 // priceCache represents a cached price entry
@@ -20,10 +21,18 @@ type priceCache struct {
 	timestamp time.Time
 }
 
+// volumeCache represents a cached volume entry
+type volumeCache struct {
+	volume     float64
+	timeWindow time.Duration
+	timestamp  time.Time
+}
+
 // marketDataService implements MarketDataService interface
 type marketDataService struct {
 	client       api.BinanceClient
 	priceCache   map[string]*priceCache
+	volumeCache  map[string]*volumeCache
 	cacheTTL     time.Duration
 	cacheMutex   sync.RWMutex
 }
@@ -35,9 +44,10 @@ func NewMarketDataService(client api.BinanceClient, cacheTTL time.Duration) Mark
 	}
 	
 	return &marketDataService{
-		client:     client,
-		priceCache: make(map[string]*priceCache),
-		cacheTTL:   cacheTTL,
+		client:      client,
+		priceCache:  make(map[string]*priceCache),
+		volumeCache: make(map[string]*volumeCache),
+		cacheTTL:    cacheTTL,
 	}
 }
 
@@ -104,4 +114,75 @@ func (s *marketDataService) SubscribeToPrice(symbol string, callback func(float6
 	// This is a placeholder implementation
 	// In a real implementation, this would use WebSocket connections
 	return fmt.Errorf("price subscription not implemented yet")
+}
+
+// GetVolume retrieves the cumulative volume for a symbol within a time window
+func (s *marketDataService) GetVolume(symbol string, timeWindow time.Duration) (float64, error) {
+	if symbol == "" {
+		return 0, fmt.Errorf("symbol cannot be empty")
+	}
+	
+	if timeWindow <= 0 {
+		return 0, fmt.Errorf("time window must be greater than 0")
+	}
+	
+	// Create cache key based on symbol and time window
+	cacheKey := fmt.Sprintf("%s_%d", symbol, timeWindow)
+	
+	// Check cache first
+	s.cacheMutex.RLock()
+	cached, exists := s.volumeCache[cacheKey]
+	s.cacheMutex.RUnlock()
+	
+	if exists && time.Since(cached.timestamp) < s.cacheTTL && cached.timeWindow == timeWindow {
+		return cached.volume, nil
+	}
+	
+	// Calculate how many klines we need based on time window
+	// Use 1-minute intervals for granular volume data
+	interval := "1m"
+	limit := int(timeWindow.Minutes())
+	
+	// Binance API has a maximum limit of 1000 klines
+	if limit > 1000 {
+		limit = 1000
+	}
+	
+	// If time window is less than 1 minute, use at least 1 kline
+	if limit < 1 {
+		limit = 1
+	}
+	
+	// Fetch klines from API
+	klines, err := s.client.GetKlines(symbol, interval, limit)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get klines for volume calculation: %w", err)
+	}
+	
+	if len(klines) == 0 {
+		return 0, fmt.Errorf("no kline data available for %s", symbol)
+	}
+	
+	// Calculate cumulative volume within the time window
+	now := time.Now().UnixMilli()
+	windowStart := now - timeWindow.Milliseconds()
+	
+	var totalVolume float64
+	for _, kline := range klines {
+		// Only include klines within the time window
+		if kline.OpenTime >= windowStart {
+			totalVolume += kline.Volume
+		}
+	}
+	
+	// Update cache
+	s.cacheMutex.Lock()
+	s.volumeCache[cacheKey] = &volumeCache{
+		volume:     totalVolume,
+		timeWindow: timeWindow,
+		timestamp:  time.Now(),
+	}
+	s.cacheMutex.Unlock()
+	
+	return totalVolume, nil
 }
